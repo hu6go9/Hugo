@@ -189,8 +189,8 @@ nav.tabs button {
   transition: all 0.15s ease;
 }
 nav.tabs button.active {
-  background: var(--accent);
-  color: white;
+  background: var(--pink);
+  color: var(--charbon);
 }
 nav.tabs button:not(.active):hover { color: var(--text); }
 
@@ -267,7 +267,7 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
   cursor: pointer;
   font-weight: 600;
 }
-.chip.active { background: var(--accent); border-color: var(--accent); color: white; }
+.chip.active { background: var(--pink); border-color: var(--pink); color: var(--charbon); }
 
 .btn {
   border: none;
