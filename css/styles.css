@@ -97,7 +97,6 @@
   --blue-dim: #085fff33;
   --pink: #ff7fde;
   --pitch: #085fff;
-  --pitch-alt: #0a52d6;
   --pitch-line: rgba(255, 255, 255, 0.6);
   --radius: 14px;
   --radius-sm: 8px;
@@ -465,7 +464,7 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
   aspect-ratio: 2 / 3;
   background-color: var(--pitch);
   background-image: url("../assets/brand/patterns/pattern-mid-on-black.webp"),
-    repeating-linear-gradient(180deg, var(--pitch) 0%, var(--pitch) 10%, var(--pitch-alt) 10%, var(--pitch-alt) 20%);
+    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 10%, rgba(0, 0, 0, 0.05) 10%, rgba(0, 0, 0, 0.05) 20%);
   background-size: 260px auto, auto;
   background-repeat: repeat, repeat;
   background-blend-mode: soft-light, normal;
@@ -502,8 +501,8 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
 
 .pitch-slot {
   position: absolute;
-  width: 78px;
-  height: 78px;
+  width: 70px;
+  height: 70px;
   transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
@@ -530,7 +529,7 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
   background: rgba(255, 127, 222, 0.25);
   border-color: var(--pink);
 }
-.pitch-slot .avatar { width: 32px; height: 32px; font-size: 0.65rem; }
+.pitch-slot .avatar { width: 30px; height: 30px; font-size: 0.62rem; }
 .pitch-slot .slot-name {
   font-size: 0.62rem;
   font-weight: 700;
@@ -593,6 +592,7 @@ footer.credit {
 @media (max-width: 600px) {
   .brand span.full { display: none; }
   main { padding: 12px; }
-  .pitch-slot { width: 62px; height: 62px; }
-  .pitch-slot .avatar { width: 26px; height: 26px; }
+  .pitch-slot { width: 52px; height: 52px; }
+  .pitch-slot .avatar { width: 22px; height: 22px; font-size: 0.5rem; }
+  .pitch-slot .slot-name { font-size: 0.52rem; max-width: 50px; }
 }
