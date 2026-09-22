@@ -508,6 +508,21 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
   white-space: nowrap;
 }
 
+.pitch-slot.out-of-position { border-color: var(--pink); }
+.oop-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--pink);
+  color: var(--charbon);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 999px;
+  line-height: 1.4;
+}
+
 .drag-ghost {
   position: fixed;
   pointer-events: none;

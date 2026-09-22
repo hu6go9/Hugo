@@ -301,7 +301,10 @@ function renderPitch() {
     el.dataset.category = category;
 
     if (player) {
-      el.innerHTML = `<div class="avatar" style="background:${club.color}">${initials(player)}</div><div class="slot-name">${player.name}</div>`;
+      const outOfPosition = player.category !== category;
+      el.classList.toggle("out-of-position", outOfPosition);
+      const badge = outOfPosition ? `<span class="oop-badge" title="Hors poste naturel (${player.pos})">${player.pos}</span>` : "";
+      el.innerHTML = `<div class="avatar" style="background:${club.color}">${initials(player)}</div><div class="slot-name">${player.name}</div>${badge}`;
       el.addEventListener("pointerdown", (e) => startDrag(e, { type: "slot", slotCode: slot.code, player }));
     } else {
       el.innerHTML = `<div class="slot-label">${slot.pos}</div>`;
@@ -415,6 +418,15 @@ function positionGhost(ghost, x, y) {
   ghost.style.top = y + "px";
 }
 
+function canPlaceInSlot(playerCategory, slotCategory) {
+  // Liberté totale entre postes de champ (DEF/MID/ATT) pour les placements créatifs.
+  // Seul le gardien reste réservé aux gardiens, par réalisme.
+  if (playerCategory === "GK" || slotCategory === "GK") {
+    return playerCategory === slotCategory;
+  }
+  return true;
+}
+
 function slotUnderPoint(x, y) {
   const el = document.elementFromPoint(x, y);
   return el ? el.closest(".pitch-slot") : null;
@@ -448,7 +460,7 @@ function handleDrop(x, y) {
   if (source.type === "roster") {
     if (!targetSlotEl) return;
     const category = targetSlotEl.dataset.category;
-    if (source.player.category !== category) return; // poste incompatible
+    if (!canPlaceInSlot(source.player.category, category)) return;
     const slotCode = targetSlotEl.dataset.slotCode;
     compo.assignments[slotCode] = source.player.id;
   } else if (source.type === "slot") {
@@ -458,8 +470,13 @@ function handleDrop(x, y) {
       const targetCode = targetSlotEl.dataset.slotCode;
       const targetCategory = targetSlotEl.dataset.category;
       if (targetCode === source.slotCode) return;
-      if (source.player.category !== targetCategory) return;
+      if (!canPlaceInSlot(source.player.category, targetCategory)) return;
       const targetPlayerId = compo.assignments[targetCode];
+      if (targetPlayerId) {
+        const targetPlayer = playerById(targetPlayerId);
+        const sourceCategory = document.querySelector(`.pitch-slot[data-slot-code="${source.slotCode}"]`)?.dataset.category;
+        if (!canPlaceInSlot(targetPlayer.category, sourceCategory)) return;
+      }
       compo.assignments[targetCode] = source.player.id;
       if (targetPlayerId) compo.assignments[source.slotCode] = targetPlayerId;
       else delete compo.assignments[source.slotCode];
