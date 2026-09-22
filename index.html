@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Composeur d'équipe — Ligue 1</title>
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="logo-dot"></span>
+    <span>
+      Composeur d'équipe <span class="full">· Ligue 1</span>
+      <small>Prototype — données fictives</small>
+    </span>
+  </div>
+  <nav class="tabs">
+    <button class="active" data-tab="groupe">Sélection groupe</button>
+    <button data-tab="compo">Compo 11 club</button>
+  </nav>
+  <div class="save-indicator" id="save-indicator"><span class="dot"></span> Sauvegarde locale auto</div>
+</header>
+
+<main>
+
+  <!-- ===================== VUE 1 : GROUPE ===================== -->
+  <section id="view-groupe" class="view active">
+    <div class="panel" style="margin-bottom:16px;">
+      <div class="toolbar">
+        <select id="groupe-size">
+          <option value="23">Groupe de 23</option>
+          <option value="26">Groupe de 26</option>
+        </select>
+        <input type="search" id="groupe-search" placeholder="Rechercher un joueur ou un club..." style="min-width:220px;" />
+        <div class="chip-group" id="groupe-filters">
+          <button class="chip active" data-cat="ALL">Tous</button>
+          <button class="chip" data-cat="GK">Gardiens</button>
+          <button class="chip" data-cat="DEF">Défenseurs</button>
+          <button class="chip" data-cat="MID">Milieux</button>
+          <button class="chip" data-cat="ATT">Attaquants</button>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn btn-ghost" id="groupe-reset">Réinitialiser</button>
+      </div>
+
+      <div class="quota-row" id="quota-row"></div>
+
+      <div class="grid-players" id="groupe-grid"></div>
+    </div>
+
+    <div class="panel selected-summary" id="groupe-summary-panel">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px;">
+        <h3 style="margin:0;">Groupe sélectionné</h3>
+        <span id="groupe-total" class="pos-tag" style="background:var(--accent);color:white;"></span>
+        <div class="spacer"></div>
+        <button class="btn btn-primary" id="groupe-share">Partager</button>
+      </div>
+      <div id="groupe-summary"></div>
+    </div>
+  </section>
+
+  <!-- ===================== VUE 2 : COMPO CLUB ===================== -->
+  <section id="view-compo" class="view">
+    <div class="club-select-grid" id="club-select-grid"></div>
+
+    <div class="compo-layout">
+      <div class="panel">
+        <div class="roster-cat-label" style="margin-top:0;">Effectif</div>
+        <div class="roster-list" id="roster-list"></div>
+      </div>
+
+      <div class="pitch-wrap" id="pitch-wrap">
+        <div class="formation-bar">
+          <select id="formation-select"></select>
+          <div class="spacer"></div>
+          <button class="btn btn-ghost" id="compo-reset">Réinitialiser</button>
+          <button class="btn btn-primary" id="compo-share">Partager</button>
+        </div>
+        <div class="pitch" id="pitch">
+          <div class="center-circle"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="credit">Prototype LFP Media — données joueurs fictives, à remplacer par la source officielle.</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
