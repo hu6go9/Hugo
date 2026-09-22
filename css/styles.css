@@ -10,77 +10,77 @@
 
 @font-face {
   font-family: "Insatiable Display";
-  src: url("assets/fonts/InsatiableDisplay-RegularCondensed.woff2") format("woff2");
+  src: url("../assets/fonts/InsatiableDisplay-RegularCondensed.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Insatiable Display";
-  src: url("assets/fonts/InsatiableDisplay-BoldCondensed.woff2") format("woff2");
+  src: url("../assets/fonts/InsatiableDisplay-BoldCondensed.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Insatiable Display Compressed";
-  src: url("assets/fonts/InsatiableDisplay-RegularCompressed.woff2") format("woff2");
+  src: url("../assets/fonts/InsatiableDisplay-RegularCompressed.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Insatiable Display Compressed";
-  src: url("assets/fonts/InsatiableDisplay-BoldCompressed.woff2") format("woff2");
+  src: url("../assets/fonts/InsatiableDisplay-BoldCompressed.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "GT America";
-  src: url("assets/fonts/GTAmerica-Regular.woff2") format("woff2");
+  src: url("../assets/fonts/GTAmerica-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "GT America";
-  src: url("assets/fonts/GTAmerica-RegularItalic.woff2") format("woff2");
+  src: url("../assets/fonts/GTAmerica-RegularItalic.woff2") format("woff2");
   font-weight: 400;
   font-style: italic;
   font-display: swap;
 }
 @font-face {
   font-family: "GT America";
-  src: url("assets/fonts/GTAmerica-Bold.woff2") format("woff2");
+  src: url("../assets/fonts/GTAmerica-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "GT America";
-  src: url("assets/fonts/GTAmerica-BoldItalic.woff2") format("woff2");
+  src: url("../assets/fonts/GTAmerica-BoldItalic.woff2") format("woff2");
   font-weight: 700;
   font-style: italic;
   font-display: swap;
 }
 @font-face {
   font-family: "GT America Mono";
-  src: url("assets/fonts/GTAmericaMono-Regular.woff2") format("woff2");
+  src: url("../assets/fonts/GTAmericaMono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "GT America Mono";
-  src: url("assets/fonts/GTAmericaMono-Medium.woff2") format("woff2");
+  src: url("../assets/fonts/GTAmericaMono-Medium.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "GT America Mono";
-  src: url("assets/fonts/GTAmericaMono-Bold.woff2") format("woff2");
+  src: url("../assets/fonts/GTAmericaMono-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -118,6 +118,9 @@
 }
 
 * { box-sizing: border-box; }
+
+/* Les éléments de formulaire n'héritent pas la police par défaut dans les navigateurs */
+input, select, textarea, button { font-family: inherit; }
 
 body {
   margin: 0;
