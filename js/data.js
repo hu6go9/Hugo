@@ -7,24 +7,26 @@
 
 const LOGO_BASE = "assets/logos/clubs/";
 
+// Couleurs officielles RVB issues de la "Charte Clubs L1 2025-2026" fournie par Hugo,
+// sauf ESTAC et Le Mans FC (absents de ce document) qui gardent les couleurs extraites des logos.
 const CLUBS = [
-  { id: "psg", name: "Paris Saint-Germain", short: "PSG", color: "#004070", accent: "#F00000", logo: LOGO_BASE + "psg.png" },
-  { id: "om", name: "Olympique de Marseille", short: "OM", color: "#0060B0", accent: "#FFFFFF", logo: LOGO_BASE + "om-marseille.png" },
-  { id: "asm", name: "AS Monaco", short: "ASM", color: "#E00020", accent: "#C0A070", logo: LOGO_BASE + "as-monaco.png" },
-  { id: "losc", name: "LOSC Lille", short: "LOSC", color: "#201060", accent: "#F00000", logo: LOGO_BASE + "losc-lille.png" },
-  { id: "ol", name: "Olympique Lyonnais", short: "OL", color: "#0020B0", accent: "#F00010", logo: LOGO_BASE + "olympique-lyonnais.png" },
-  { id: "ogcn", name: "OGC Nice", short: "OGCN", color: "#101010", accent: "#C0A050", logo: LOGO_BASE + "ogc-nice.png" },
-  { id: "rcl", name: "RC Lens", short: "RCL", color: "#D00000", accent: "#F0D000", logo: LOGO_BASE + "rc-lens.png" },
-  { id: "srfc", name: "Stade Rennais", short: "SRFC", color: "#101010", accent: "#E00010", logo: LOGO_BASE + "stade-rennais.png" },
-  { id: "rcs", name: "RC Strasbourg", short: "RCS", color: "#00A0E0", accent: "#E00020", logo: LOGO_BASE + "rc-strasbourg.png" },
-  { id: "tfc", name: "Toulouse FC", short: "TFC", color: "#402050", accent: "#C9A050", logo: LOGO_BASE + "toulouse-fc.png" },
-  { id: "sb29", name: "Stade Brestois 29", short: "SB29", color: "#D00000", accent: "#FFFFFF", logo: LOGO_BASE + "stade-brestois-29.png" },
-  { id: "fcl", name: "FC Lorient", short: "FCL", color: "#F06000", accent: "#101010", logo: LOGO_BASE + "fc-lorient.png" },
-  { id: "sco", name: "Angers SCO", short: "SCO", color: "#1A1A1A", accent: "#C9A227", logo: LOGO_BASE + "angers-sco.png" },
-  { id: "aja", name: "AJ Auxerre", short: "AJA", color: "#004090", accent: "#FFFFFF", logo: LOGO_BASE + "aj-auxerre.png" },
-  { id: "hac", name: "Le Havre AC", short: "HAC", color: "#002040", accent: "#70C0E0", logo: LOGO_BASE + "le-havre-ac.png" },
+  { id: "psg", name: "Paris Saint-Germain", short: "PSG", color: "#004F91", accent: "#E30613", logo: LOGO_BASE + "psg.png" },
+  { id: "om", name: "Olympique de Marseille", short: "OM", color: "#0098D8", accent: "#FFFFFF", logo: LOGO_BASE + "om-marseille.png" },
+  { id: "asm", name: "AS Monaco", short: "ASM", color: "#D70032", accent: "#A8884D", logo: LOGO_BASE + "as-monaco.png" },
+  { id: "losc", name: "LOSC Lille", short: "LOSC", color: "#E41B13", accent: "#211E5F", logo: LOGO_BASE + "losc-lille.png" },
+  { id: "ol", name: "Olympique Lyonnais", short: "OL", color: "#0F23AA", accent: "#E5202E", logo: LOGO_BASE + "olympique-lyonnais.png" },
+  { id: "ogcn", name: "OGC Nice", short: "OGCN", color: "#DA2128", accent: "#2C2A29", logo: LOGO_BASE + "ogc-nice.png" },
+  { id: "rcl", name: "RC Lens", short: "RCL", color: "#C51315", accent: "#FFD500", logo: LOGO_BASE + "rc-lens.png" },
+  { id: "srfc", name: "Stade Rennais", short: "SRFC", color: "#DA261B", accent: "#0D181C", logo: LOGO_BASE + "stade-rennais.png" },
+  { id: "rcs", name: "RC Strasbourg", short: "RCS", color: "#009FE3", accent: "#DC2F34", logo: LOGO_BASE + "rc-strasbourg.png" },
+  { id: "tfc", name: "Toulouse FC", short: "TFC", color: "#3F2B56", accent: "#EB0045", logo: LOGO_BASE + "toulouse-fc.png" },
+  { id: "sb29", name: "Stade Brestois 29", short: "SB29", color: "#D10A11", accent: "#FFFFFF", logo: LOGO_BASE + "stade-brestois-29.png" },
+  { id: "fcl", name: "FC Lorient", short: "FCL", color: "#EC6408", accent: "#161412", logo: LOGO_BASE + "fc-lorient.png" },
+  { id: "sco", name: "Angers SCO", short: "SCO", color: "#000000", accent: "#BD9D5F", logo: LOGO_BASE + "angers-sco.png" },
+  { id: "aja", name: "AJ Auxerre", short: "AJA", color: "#164194", accent: "#B2B3B6", logo: LOGO_BASE + "aj-auxerre.png" },
+  { id: "hac", name: "Le Havre AC", short: "HAC", color: "#183360", accent: "#79BDE8", logo: LOGO_BASE + "le-havre-ac.png" },
   { id: "estac", name: "ESTAC Troyes", short: "ESTAC", color: "#0060B0", accent: "#F0B000", logo: LOGO_BASE + "estac-troyes.webp" },
-  { id: "pfc", name: "Paris FC", short: "PFC", color: "#001030", accent: "#0090D0", logo: LOGO_BASE + "paris-fc.png" },
+  { id: "pfc", name: "Paris FC", short: "PFC", color: "#0A0E2D", accent: "#199ACD", logo: LOGO_BASE + "paris-fc.png" },
   { id: "lmfc", name: "Le Mans FC", short: "LMFC", color: "#A00010", accent: "#F0B000", logo: LOGO_BASE + "lemans-fc.png" },
 ];
 
