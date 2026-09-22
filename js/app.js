@@ -265,7 +265,7 @@ function renderClubSelector() {
   CLUBS.forEach((club) => {
     const chip = document.createElement("div");
     chip.className = "club-chip" + (club.id === state.compo.activeClub ? " active" : "");
-    chip.innerHTML = `<span class="dot" style="background:${club.color}"></span>${club.short}`;
+    chip.innerHTML = `<img class="club-logo" src="${club.logo}" alt="${club.name}" />${club.short}`;
     chip.addEventListener("click", () => {
       state.compo.activeClub = club.id;
       renderCompoView();
@@ -342,8 +342,16 @@ function renderRoster() {
   });
 }
 
+function renderActiveClubHeaders() {
+  const club = getClub(state.compo.activeClub);
+  const html = `<img src="${club.logo}" alt="${club.name}" /><span>${club.name}</span>`;
+  document.getElementById("roster-club-header").innerHTML = html;
+  document.getElementById("pitch-club-header").innerHTML = html;
+}
+
 function renderCompoView() {
   renderClubSelector();
+  renderActiveClubHeaders();
   renderFormationSelect();
   renderPitch();
   renderRoster();

@@ -48,12 +48,11 @@ header.topbar {
   font-size: 1.15rem;
   letter-spacing: 0.3px;
 }
-.brand .logo-dot {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, var(--accent), var(--gold));
-  display: inline-block;
+.brand .brand-logo {
+  height: 34px;
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 .brand small {
   display: block;
@@ -281,8 +280,35 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
   font-size: 0.78rem;
   color: var(--text);
 }
-.club-chip .dot { width: 20px; height: 20px; border-radius: 50%; }
+.club-chip .club-logo {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 50%;
+  padding: 2px;
+  flex-shrink: 0;
+}
 .club-chip.active { border-color: var(--gold); }
+
+.active-club-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+}
+.active-club-header img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 50%;
+  padding: 3px;
+  flex-shrink: 0;
+}
+#pitch-club-header { margin-bottom: 0; margin-right: auto; }
 
 .roster-list { display: flex; flex-direction: column; gap: 8px; max-height: 70vh; overflow-y: auto; padding-right: 4px; }
 .roster-cat-label { font-size: 0.72rem; text-transform: uppercase; color: var(--text-dim); font-weight: 700; margin: 10px 0 2px; }
