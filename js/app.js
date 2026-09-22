@@ -4,6 +4,7 @@
 
 const STORAGE_KEY = "l1-composer-state-v1";
 const CATS = ["GK", "DEF", "MID", "ATT"];
+const CATEGORY_SHORT = { GK: "G", DEF: "DEF", MID: "MIL", ATT: "ATT" };
 const QUOTAS = {
   23: { GK: 3, DEF: 7, MID: 7, ATT: 6 },
   26: { GK: 3, DEF: 8, MID: 8, ATT: 7 },
@@ -143,6 +144,26 @@ function renderQuotaBar() {
   document.getElementById("groupe-total").textContent = `${total} / ${totalMax} joueurs sélectionnés`;
 }
 
+function renderProgressFloat() {
+  const quotas = groupeQuotas();
+  const counts = groupeCounts();
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+  const totalMax = Object.values(quotas).reduce((a, b) => a + b, 0);
+  const remaining = Math.max(0, totalMax - total);
+  const complete = total >= totalMax;
+
+  document.getElementById("progress-float-value").textContent = `${total}/${totalMax}`;
+  document.getElementById("progress-float-sub").textContent = complete
+    ? "Groupe complet"
+    : `${remaining} joueur${remaining > 1 ? "s" : ""} restant${remaining > 1 ? "s" : ""}`;
+  document.getElementById("groupe-progress-float").classList.toggle("complete", complete);
+
+  document.getElementById("progress-float-cats").innerHTML = CATS.map((cat) => {
+    const full = counts[cat] >= quotas[cat];
+    return `<div class="progress-cat${full ? " full" : ""}"><span class="cat-code">${CATEGORY_SHORT[cat]}</span><span class="cat-count">${counts[cat]}/${quotas[cat]}</span></div>`;
+  }).join("");
+}
+
 function filteredGroupePlayers() {
   const { search, filterCat } = state.groupe;
   return PLAYERS.filter((p) => {
@@ -242,6 +263,7 @@ function renderGroupeView() {
   renderQuotaBar();
   renderGroupePool();
   renderGroupeSummary();
+  renderProgressFloat();
 }
 
 function initGroupeControls() {
@@ -270,6 +292,9 @@ function initGroupeControls() {
     if (state.groupe.subTab === "onze") renderFranceOnzeView();
   });
   document.getElementById("groupe-share").addEventListener("click", () => shareElement(document.getElementById("groupe-summary-panel"), "selection-groupe.png"));
+  document.getElementById("progress-float-btn").addEventListener("click", () => {
+    document.getElementById("groupe-summary-panel").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
 }
 
 // ==========================================================
