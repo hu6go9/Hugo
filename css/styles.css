@@ -96,8 +96,9 @@
   --blue: #085fff;
   --blue-dim: #085fff33;
   --pink: #ff7fde;
-  --pitch: #0d5c2e;
-  --pitch-line: rgba(255, 255, 255, 0.55);
+  --pitch: #085fff;
+  --pitch-alt: #0a52d6;
+  --pitch-line: rgba(255, 255, 255, 0.6);
   --radius: 14px;
   --radius-sm: 8px;
   --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
@@ -462,7 +463,12 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
   position: relative;
   width: 100%;
   aspect-ratio: 2 / 3;
-  background: repeating-linear-gradient(180deg, var(--pitch), var(--pitch) 10%, #0f6a34 10%, #0f6a34 20%);
+  background-color: var(--pitch);
+  background-image: url("../assets/brand/patterns/pattern-mid-on-black.webp"),
+    repeating-linear-gradient(180deg, var(--pitch) 0%, var(--pitch) 10%, var(--pitch-alt) 10%, var(--pitch-alt) 20%);
+  background-size: 260px auto, auto;
+  background-repeat: repeat, repeat;
+  background-blend-mode: soft-light, normal;
   border-radius: 10px;
   border: 3px solid var(--pitch-line);
   overflow: hidden;
