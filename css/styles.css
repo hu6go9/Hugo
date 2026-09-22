@@ -4,10 +4,88 @@
  * Hiérarchie d'usage : Charbon 50%, Bleu Électrique 35%, Blanc 10%, Rose Lumineux 5%.
  * Rose Lumineux = surlignage uniquement (jamais en fond large, jamais en texte de titre).
  *
- * Typographies officielles = Insatiable Display/TV/Jersey + GT America (fichiers
- * propriétaires, pas encore reçus). Fallbacks Google Fonts en attendant :
- * Oswald (condensée, pour les titres) / Inter (texte courant) / IBM Plex Mono (data).
+ * Typographies officielles : Insatiable Display (titrage) + GT America (texte courant
+ * et data/mono). Fichiers fournis par Hugo, chargés en local depuis assets/fonts/.
  */
+
+@font-face {
+  font-family: "Insatiable Display";
+  src: url("assets/fonts/InsatiableDisplay-RegularCondensed.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Insatiable Display";
+  src: url("assets/fonts/InsatiableDisplay-BoldCondensed.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Insatiable Display Compressed";
+  src: url("assets/fonts/InsatiableDisplay-RegularCompressed.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Insatiable Display Compressed";
+  src: url("assets/fonts/InsatiableDisplay-BoldCompressed.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "GT America";
+  src: url("assets/fonts/GTAmerica-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "GT America";
+  src: url("assets/fonts/GTAmerica-RegularItalic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "GT America";
+  src: url("assets/fonts/GTAmerica-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "GT America";
+  src: url("assets/fonts/GTAmerica-BoldItalic.woff2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "GT America Mono";
+  src: url("assets/fonts/GTAmericaMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "GT America Mono";
+  src: url("assets/fonts/GTAmericaMono-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "GT America Mono";
+  src: url("assets/fonts/GTAmericaMono-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --charbon: #262626;
   --charbon-light: #333333;
@@ -23,9 +101,9 @@
   --radius: 14px;
   --radius-sm: 8px;
   --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  --font-display: "Oswald", "Segoe UI", system-ui, sans-serif;
-  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", "Courier New", monospace;
+  --font-display: "Insatiable Display", "Segoe UI", system-ui, sans-serif;
+  --font-body: "GT America", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "GT America Mono", "Courier New", monospace;
   font-family: var(--font-body);
 }
 
