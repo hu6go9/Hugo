@@ -1,27 +1,49 @@
+/*
+ * Palette officielle "Guide de marque Ligue 1 McDonald's" (v1.3) :
+ * Charbon #262626 / Bleu Électrique #085FFF / Rose Lumineux #FF7FDE / Blanc #FFFFFF.
+ * Hiérarchie d'usage : Charbon 50%, Bleu Électrique 35%, Blanc 10%, Rose Lumineux 5%.
+ * Rose Lumineux = surlignage uniquement (jamais en fond large, jamais en texte de titre).
+ *
+ * Typographies officielles = Insatiable Display/TV/Jersey + GT America (fichiers
+ * propriétaires, pas encore reçus). Fallbacks Google Fonts en attendant :
+ * Oswald (condensée, pour les titres) / Inter (texte courant) / IBM Plex Mono (data).
+ */
 :root {
-  --bg: #0b1224;
-  --bg-elevated: #121b34;
-  --bg-card: #182647;
-  --bg-card-hover: #1f3159;
-  --border: #26355f;
-  --text: #f2f4fa;
-  --text-dim: #9aa6c8;
-  --accent: #ff3b30;
-  --accent-dim: #ff3b3033;
-  --gold: #ffd100;
+  --charbon: #262626;
+  --charbon-light: #333333;
+  --charbon-lighter: #3d3d3d;
+  --border: #454545;
+  --text: #ffffff;
+  --text-dim: #b3b3b3;
+  --blue: #085fff;
+  --blue-dim: #085fff33;
+  --pink: #ff7fde;
   --pitch: #0d5c2e;
   --pitch-line: rgba(255, 255, 255, 0.55);
   --radius: 14px;
   --radius-sm: 8px;
   --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  --font-display: "Oswald", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "Courier New", monospace;
+  font-family: var(--font-body);
+}
+
+/* Compat : anciens noms de tokens encore référencés ailleurs dans ce fichier */
+:root {
+  --bg: var(--charbon);
+  --bg-elevated: var(--charbon-light);
+  --bg-card: var(--charbon-lighter);
+  --bg-card-hover: #474747;
+  --accent: var(--blue);
+  --accent-dim: var(--blue-dim);
 }
 
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  background: radial-gradient(circle at top, #16213f 0%, var(--bg) 55%);
+  background: var(--charbon);
   color: var(--text);
   min-height: 100vh;
 }
@@ -31,7 +53,7 @@ header.topbar {
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  background: linear-gradient(120deg, #0b1224 0%, #1a2a52 100%);
+  background: var(--charbon);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
@@ -44,9 +66,11 @@ header.topbar {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-weight: 800;
-  font-size: 1.15rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
   letter-spacing: 0.3px;
+  text-transform: uppercase;
 }
 .brand .brand-logo {
   height: 34px;
@@ -73,8 +97,11 @@ nav.tabs button {
   border: none;
   background: transparent;
   color: var(--text-dim);
+  font-family: var(--font-display);
   font-weight: 600;
   font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
   padding: 8px 16px;
   border-radius: 999px;
   cursor: pointer;
@@ -139,12 +166,15 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
   border: none;
   border-radius: var(--radius-sm);
   padding: 9px 16px;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: 600;
   font-size: 0.85rem;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
   cursor: pointer;
 }
 .btn-primary { background: var(--accent); color: white; }
-.btn-primary:hover { background: #ff574c; }
+.btn-primary:hover { background: #2b7aff; }
 .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
 .btn-ghost:hover { border-color: var(--accent); }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -165,10 +195,10 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
   padding: 12px;
 }
 .quota-card .label { font-size: 0.75rem; color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-.quota-card .count { font-size: 1.4rem; font-weight: 800; margin-top: 2px; }
+.quota-card .count { font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700; margin-top: 2px; }
 .quota-card .bar { height: 5px; background: var(--border); border-radius: 4px; margin-top: 8px; overflow: hidden; }
 .quota-card .bar > span { display: block; height: 100%; background: var(--accent); transition: width 0.2s ease; }
-.quota-card.full .bar > span { background: var(--gold); }
+.quota-card.full .bar > span { background: var(--pink); }
 
 .grid-players {
   display: grid;
@@ -189,7 +219,7 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
   user-select: none;
 }
 .player-card:hover { background: var(--bg-card-hover); }
-.player-card.selected { border-color: var(--gold); background: #2a2410; }
+.player-card.selected { border-color: var(--pink); background: #3d2c38; }
 .player-card.disabled { opacity: 0.35; cursor: not-allowed; }
 
 .avatar {
@@ -210,8 +240,9 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
 .player-meta .sub { font-size: 0.72rem; color: var(--text-dim); }
 
 .pos-tag {
+  font-family: var(--font-mono);
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 700;
   padding: 2px 6px;
   border-radius: 5px;
   background: var(--border);
@@ -224,7 +255,7 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
   border-top: 1px solid var(--border);
   padding-top: 16px;
 }
-.selected-summary h3 { margin: 0 0 10px; font-size: 1rem; }
+.selected-summary h3 { margin: 0 0 10px; font-family: var(--font-display); font-size: 1.05rem; text-transform: uppercase; letter-spacing: 0.3px; }
 .summary-group { margin-bottom: 12px; }
 .summary-group .cat-label { font-size: 0.72rem; text-transform: uppercase; color: var(--text-dim); font-weight: 700; margin-bottom: 6px; }
 .summary-chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -233,7 +264,7 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
   align-items: center;
   gap: 6px;
   background: var(--bg-card);
-  border: 1px solid var(--gold);
+  border: 1px solid var(--pink);
   border-radius: 999px;
   padding: 5px 6px 5px 10px;
   font-size: 0.78rem;
@@ -289,7 +320,7 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
   padding: 2px;
   flex-shrink: 0;
 }
-.club-chip.active { border-color: var(--gold); }
+.club-chip.active { border-color: var(--pink); }
 
 .active-club-header {
   display: flex;
@@ -379,12 +410,12 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
   color: rgba(255, 255, 255, 0.85);
 }
 .pitch-slot.filled {
-  background: rgba(11, 18, 36, 0.85);
-  border: 2px solid var(--gold);
+  background: rgba(38, 38, 38, 0.88);
+  border: 2px solid var(--pink);
 }
 .pitch-slot.dragover {
-  background: rgba(255, 209, 0, 0.25);
-  border-color: var(--gold);
+  background: rgba(255, 127, 222, 0.25);
+  border-color: var(--pink);
 }
 .pitch-slot .avatar { width: 32px; height: 32px; font-size: 0.65rem; }
 .pitch-slot .slot-name {
