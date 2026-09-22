@@ -194,6 +194,32 @@ nav.tabs button.active {
 }
 nav.tabs button:not(.active):hover { color: var(--text); }
 
+nav.sub-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+nav.sub-tabs button {
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 10px 4px;
+  margin-right: 18px;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+nav.sub-tabs button.active { color: var(--text); border-bottom-color: var(--pink); }
+nav.sub-tabs button:not(.active):hover { color: var(--text); }
+
+.subview { display: none; }
+.subview.active { display: block; }
+
 main {
   max-width: 1280px;
   margin: 0 auto;

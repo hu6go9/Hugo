@@ -16,11 +16,13 @@ const state = {
     selectedIds: new Set(),
     search: "",
     filterCat: "ALL",
+    subTab: "pool",
   },
   compo: {
     activeClub: CLUBS[0].id,
     byClub: {}, // clubId -> { formation, assignments: { slotCode: playerId } }
   },
+  franceCompo: { formation: "4-3-3", assignments: {} },
 };
 
 function defaultCompo() {
@@ -35,6 +37,7 @@ function saveState() {
       selectedIds: Array.from(state.groupe.selectedIds),
     },
     compo: state.compo,
+    franceCompo: state.franceCompo,
   };
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -56,6 +59,9 @@ function loadState() {
     if (data.compo) {
       state.compo.byClub = data.compo.byClub || {};
       state.compo.activeClub = data.compo.activeClub || CLUBS[0].id;
+    }
+    if (data.franceCompo) {
+      state.franceCompo = data.franceCompo;
     }
   } catch (e) {
     /* ignore */
@@ -178,18 +184,27 @@ function renderGroupePool() {
   });
 }
 
+function pruneFranceAssignments() {
+  const assignments = state.franceCompo.assignments;
+  Object.keys(assignments).forEach((slotCode) => {
+    if (!state.groupe.selectedIds.has(assignments[slotCode])) delete assignments[slotCode];
+  });
+}
+
 function toggleGroupeSelection(id) {
   const p = playerById(id);
   const quotas = groupeQuotas();
   const counts = groupeCounts();
   if (state.groupe.selectedIds.has(id)) {
     state.groupe.selectedIds.delete(id);
+    pruneFranceAssignments();
   } else {
     if (counts[p.category] >= quotas[p.category]) return;
     state.groupe.selectedIds.add(id);
   }
   scheduleSave();
   renderGroupeView();
+  if (state.groupe.subTab === "onze") renderFranceOnzeView();
 }
 
 function renderGroupeSummary() {
@@ -243,8 +258,10 @@ function initGroupeControls() {
   document.getElementById("groupe-reset").addEventListener("click", () => {
     if (!confirm("Réinitialiser la sélection du groupe ?")) return;
     state.groupe.selectedIds.clear();
+    state.franceCompo.assignments = {};
     scheduleSave();
     renderGroupeView();
+    if (state.groupe.subTab === "onze") renderFranceOnzeView();
   });
   document.getElementById("groupe-share").addEventListener("click", () => shareElement(document.getElementById("groupe-summary-panel"), "selection-groupe.png"));
 }
@@ -282,12 +299,30 @@ function renderFormationSelect() {
   select.value = currentCompo().formation;
 }
 
-function renderPitch() {
-  const compo = currentCompo();
+const FRANCE_COLOR = "#085FFF";
+
+function getCompo(context) {
+  return context === "france" ? state.franceCompo : currentCompo();
+}
+function avatarColor(context) {
+  return context === "france" ? FRANCE_COLOR : getClub(state.compo.activeClub).color;
+}
+function pitchElId(context) {
+  return context === "france" ? "france-pitch" : "pitch";
+}
+function rosterElId(context) {
+  return context === "france" ? "france-roster-list" : "roster-list";
+}
+function franceRoster() {
+  return Array.from(state.groupe.selectedIds).map(playerById).filter(Boolean);
+}
+
+function renderPitch(context) {
+  const compo = getCompo(context);
   const formation = FORMATIONS[compo.formation];
-  const pitch = document.getElementById("pitch");
+  const pitch = document.getElementById(pitchElId(context));
   pitch.querySelectorAll(".pitch-slot").forEach((el) => el.remove());
-  const club = getClub(state.compo.activeClub);
+  const color = avatarColor(context);
 
   formation.slots.forEach((slot) => {
     const category = POSITIONS[slot.pos].category;
@@ -304,8 +339,8 @@ function renderPitch() {
       const outOfPosition = player.category !== category;
       el.classList.toggle("out-of-position", outOfPosition);
       const badge = outOfPosition ? `<span class="oop-badge" title="Hors poste naturel (${player.pos})">${player.pos}</span>` : "";
-      el.innerHTML = `<div class="avatar" style="background:${club.color}">${initials(player)}</div><div class="slot-name">${player.name}</div>${badge}`;
-      el.addEventListener("pointerdown", (e) => startDrag(e, { type: "slot", slotCode: slot.code, player }));
+      el.innerHTML = `<div class="avatar" style="background:${color}">${initials(player)}</div><div class="slot-name">${player.name}</div>${badge}`;
+      el.addEventListener("pointerdown", (e) => startDrag(e, { type: "slot", slotCode: slot.code, player, context }));
     } else {
       el.innerHTML = `<div class="slot-label">${slot.pos}</div>`;
     }
@@ -313,13 +348,13 @@ function renderPitch() {
   });
 }
 
-function renderRoster() {
-  const wrap = document.getElementById("roster-list");
+function renderRoster(context) {
+  const wrap = document.getElementById(rosterElId(context));
   wrap.innerHTML = "";
-  const compo = currentCompo();
+  const compo = getCompo(context);
   const usedIds = new Set(Object.values(compo.assignments));
-  const roster = playersByClub(state.compo.activeClub);
-  const club = getClub(state.compo.activeClub);
+  const roster = context === "france" ? franceRoster() : playersByClub(state.compo.activeClub);
+  const color = avatarColor(context);
 
   CATS.forEach((cat) => {
     const players = roster.filter((p) => p.category === cat);
@@ -333,12 +368,12 @@ function renderRoster() {
       const card = document.createElement("div");
       card.className = "player-card" + (used ? " disabled" : "");
       card.innerHTML = `
-        <div class="avatar" style="background:${club.color}">${initials(p)}</div>
+        <div class="avatar" style="background:${color}">${initials(p)}</div>
         <div class="player-meta"><div class="name">${p.fullName}</div><div class="sub">${p.age} ans</div></div>
         <span class="pos-tag">${p.pos}</span>
       `;
       if (!used) {
-        card.addEventListener("pointerdown", (e) => startDrag(e, { type: "roster", player: p }));
+        card.addEventListener("pointerdown", (e) => startDrag(e, { type: "roster", player: p, context }));
       }
       wrap.appendChild(card);
     });
@@ -356,8 +391,8 @@ function renderCompoView() {
   renderClubSelector();
   renderActiveClubHeaders();
   renderFormationSelect();
-  renderPitch();
-  renderRoster();
+  renderPitch("club");
+  renderRoster("club");
 }
 
 function initCompoControls() {
@@ -376,6 +411,52 @@ function initCompoControls() {
   document.getElementById("compo-share").addEventListener("click", () => shareElement(document.getElementById("pitch-wrap"), `compo-${state.compo.activeClub}.png`));
 }
 
+// ==========================================================
+// SOUS-VUE : ONZE DE DÉPART (Équipe de France, à partir du groupe)
+// ==========================================================
+function renderFranceOnzeView() {
+  const hasGroup = state.groupe.selectedIds.size > 0;
+  document.getElementById("france-empty-state").style.display = hasGroup ? "none" : "block";
+  document.getElementById("france-compo-layout").style.display = hasGroup ? "grid" : "none";
+  if (!hasGroup) return;
+
+  const select = document.getElementById("france-formation-select");
+  select.innerHTML = Object.keys(FORMATIONS)
+    .map((key) => `<option value="${key}">${FORMATIONS[key].label}</option>`)
+    .join("");
+  select.value = state.franceCompo.formation;
+
+  renderPitch("france");
+  renderRoster("france");
+}
+
+function initFranceCompoControls() {
+  document.getElementById("france-formation-select").addEventListener("change", (e) => {
+    state.franceCompo.formation = e.target.value;
+    state.franceCompo.assignments = {};
+    scheduleSave();
+    renderFranceOnzeView();
+  });
+  document.getElementById("france-compo-reset").addEventListener("click", () => {
+    if (!confirm("Réinitialiser cet onze de départ ?")) return;
+    state.franceCompo.assignments = {};
+    scheduleSave();
+    renderFranceOnzeView();
+  });
+  document.getElementById("france-compo-share").addEventListener("click", () => shareElement(document.getElementById("france-pitch-wrap"), "onze-equipe-de-france.png"));
+}
+
+function initSubTabs() {
+  document.querySelectorAll("nav.sub-tabs button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.groupe.subTab = btn.dataset.subtab;
+      document.querySelectorAll("nav.sub-tabs button").forEach((b) => b.classList.toggle("active", b === btn));
+      document.querySelectorAll(".subview").forEach((v) => v.classList.toggle("active", v.id === "subview-" + btn.dataset.subtab));
+      if (btn.dataset.subtab === "onze") renderFranceOnzeView();
+    });
+  });
+}
+
 // ---------------- Drag & drop (pointer events, souris + tactile) ----------------
 let dragState = null;
 
@@ -383,8 +464,8 @@ function startDrag(e, source) {
   e.preventDefault();
   const ghost = document.createElement("div");
   ghost.className = "drag-ghost";
-  const club = getClub(state.compo.activeClub);
-  ghost.innerHTML = `<div class="avatar" style="background:${club.color};width:52px;height:52px;font-size:1rem;box-shadow:0 6px 16px rgba(0,0,0,.4)">${initials(source.player)}</div>`;
+  const color = avatarColor(source.context);
+  ghost.innerHTML = `<div class="avatar" style="background:${color};width:52px;height:52px;font-size:1rem;box-shadow:0 6px 16px rgba(0,0,0,.4)">${initials(source.player)}</div>`;
   document.body.appendChild(ghost);
   positionGhost(ghost, e.clientX, e.clientY);
 
@@ -441,16 +522,23 @@ function clearDragOverHighlight() {
   document.querySelectorAll(".pitch-slot.dragover").forEach((s) => s.classList.remove("dragover"));
 }
 
+function renderForContext(context) {
+  if (context === "france") renderFranceOnzeView();
+  else renderCompoView();
+}
+
 function handleDrop(x, y) {
   if (!dragState) return;
   const { source, moved } = dragState;
-  const compo = currentCompo();
+  const context = source.context;
+  const compo = getCompo(context);
+  const pitchContainer = document.getElementById(pitchElId(context));
 
   // Clic simple sur un slot rempli -> désassigner
   if (!moved && source.type === "slot") {
     delete compo.assignments[source.slotCode];
     scheduleSave();
-    renderCompoView();
+    renderForContext(context);
     return;
   }
   if (!moved) return;
@@ -474,7 +562,7 @@ function handleDrop(x, y) {
       const targetPlayerId = compo.assignments[targetCode];
       if (targetPlayerId) {
         const targetPlayer = playerById(targetPlayerId);
-        const sourceCategory = document.querySelector(`.pitch-slot[data-slot-code="${source.slotCode}"]`)?.dataset.category;
+        const sourceCategory = pitchContainer.querySelector(`[data-slot-code="${source.slotCode}"]`)?.dataset.category;
         if (!canPlaceInSlot(targetPlayer.category, sourceCategory)) return;
       }
       compo.assignments[targetCode] = source.player.id;
@@ -483,7 +571,7 @@ function handleDrop(x, y) {
     }
   }
   scheduleSave();
-  renderCompoView();
+  renderForContext(context);
 }
 
 // ---------------- Partage (export image) ----------------
@@ -517,11 +605,17 @@ async function shareElement(el, filename) {
 function init() {
   loadState();
   initTabs();
+  initSubTabs();
   initGroupeControls();
   initCompoControls();
+  initFranceCompoControls();
   document.getElementById("groupe-size").value = String(state.groupe.squadSize);
+  pruneFranceAssignments();
   renderGroupeView();
   renderCompoView();
+  if (state.groupe.subTab === "onze") {
+    document.querySelector('nav.sub-tabs button[data-subtab="onze"]').click();
+  }
 }
 
 document.addEventListener("DOMContentLoaded", init);

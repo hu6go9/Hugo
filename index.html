@@ -17,7 +17,7 @@
     </span>
   </div>
   <nav class="tabs">
-    <button class="active" data-tab="groupe">Sélection groupe</button>
+    <button class="active" data-tab="groupe">Équipe de France</button>
     <button data-tab="compo">Compo 11 club</button>
   </nav>
   <div class="save-indicator" id="save-indicator"><span class="dot"></span> Sauvegarde locale auto</div>
@@ -25,39 +25,72 @@
 
 <main>
 
-  <!-- ===================== VUE 1 : GROUPE ===================== -->
+  <!-- ===================== VUE 1 : ÉQUIPE DE FRANCE ===================== -->
   <section id="view-groupe" class="view active">
-    <div class="panel" style="margin-bottom:16px;">
-      <div class="toolbar">
-        <select id="groupe-size">
-          <option value="23">Groupe de 23</option>
-          <option value="26">Groupe de 26</option>
-        </select>
-        <input type="search" id="groupe-search" placeholder="Rechercher un joueur ou un club..." style="min-width:220px;" />
-        <div class="chip-group" id="groupe-filters">
-          <button class="chip active" data-cat="ALL">Tous</button>
-          <button class="chip" data-cat="GK">Gardiens</button>
-          <button class="chip" data-cat="DEF">Défenseurs</button>
-          <button class="chip" data-cat="MID">Milieux</button>
-          <button class="chip" data-cat="ATT">Attaquants</button>
+    <nav class="sub-tabs">
+      <button class="active" data-subtab="pool">Groupe</button>
+      <button data-subtab="onze">Onze de départ</button>
+    </nav>
+
+    <!-- --- Sous-vue : sélection du groupe --- -->
+    <div class="subview active" id="subview-pool">
+      <div class="panel" style="margin-bottom:16px;">
+        <div class="toolbar">
+          <select id="groupe-size">
+            <option value="23">Groupe de 23</option>
+            <option value="26">Groupe de 26</option>
+          </select>
+          <input type="search" id="groupe-search" placeholder="Rechercher un joueur ou un club..." style="min-width:220px;" />
+          <div class="chip-group" id="groupe-filters">
+            <button class="chip active" data-cat="ALL">Tous</button>
+            <button class="chip" data-cat="GK">Gardiens</button>
+            <button class="chip" data-cat="DEF">Défenseurs</button>
+            <button class="chip" data-cat="MID">Milieux</button>
+            <button class="chip" data-cat="ATT">Attaquants</button>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn btn-ghost" id="groupe-reset">Réinitialiser</button>
         </div>
-        <div class="spacer"></div>
-        <button class="btn btn-ghost" id="groupe-reset">Réinitialiser</button>
+
+        <div class="quota-row" id="quota-row"></div>
+
+        <div class="grid-players" id="groupe-grid"></div>
       </div>
 
-      <div class="quota-row" id="quota-row"></div>
-
-      <div class="grid-players" id="groupe-grid"></div>
+      <div class="panel selected-summary" id="groupe-summary-panel">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px;">
+          <h3 style="margin:0;">Groupe sélectionné</h3>
+          <span id="groupe-total" class="pos-tag" style="background:var(--accent);color:white;"></span>
+          <div class="spacer"></div>
+          <button class="btn btn-primary" id="groupe-share">Partager</button>
+        </div>
+        <div id="groupe-summary"></div>
+      </div>
     </div>
 
-    <div class="panel selected-summary" id="groupe-summary-panel">
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px;">
-        <h3 style="margin:0;">Groupe sélectionné</h3>
-        <span id="groupe-total" class="pos-tag" style="background:var(--accent);color:white;"></span>
-        <div class="spacer"></div>
-        <button class="btn btn-primary" id="groupe-share">Partager</button>
+    <!-- --- Sous-vue : onze de départ (à partir du groupe) --- -->
+    <div class="subview" id="subview-onze">
+      <div class="empty-state" id="france-empty-state">
+        Compose d'abord ton groupe dans l'onglet <strong>Groupe</strong> ci-dessus avant de poser ton onze de départ.
       </div>
-      <div id="groupe-summary"></div>
+      <div class="compo-layout" id="france-compo-layout" style="display:none;">
+        <div class="panel">
+          <div class="roster-cat-label" style="margin-top:0;">Groupe sélectionné</div>
+          <div class="roster-list" id="france-roster-list"></div>
+        </div>
+
+        <div class="pitch-wrap" id="france-pitch-wrap">
+          <div class="formation-bar">
+            <select id="france-formation-select"></select>
+            <div class="spacer"></div>
+            <button class="btn btn-ghost" id="france-compo-reset">Réinitialiser</button>
+            <button class="btn btn-primary" id="france-compo-share">Partager</button>
+          </div>
+          <div class="pitch" id="france-pitch">
+            <div class="center-circle"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
