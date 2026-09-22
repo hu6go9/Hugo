@@ -147,11 +147,7 @@ function filteredGroupePlayers() {
   const { search, filterCat } = state.groupe;
   return PLAYERS.filter((p) => {
     if (filterCat !== "ALL" && p.category !== filterCat) return false;
-    if (search) {
-      const q = search.toLowerCase();
-      const club = getClub(p.clubId).name.toLowerCase();
-      if (!p.fullName.toLowerCase().includes(q) && !club.includes(q)) return false;
-    }
+    if (search && !p.fullName.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 }
@@ -161,26 +157,36 @@ function renderGroupePool() {
   grid.innerHTML = "";
   const quotas = groupeQuotas();
   const counts = groupeCounts();
-  filteredGroupePlayers().forEach((p) => {
-    const selected = state.groupe.selectedIds.has(p.id);
-    const catFull = counts[p.category] >= quotas[p.category];
-    const disabled = !selected && catFull;
-    const card = document.createElement("div");
-    card.className = "player-card" + (selected ? " selected" : "") + (disabled ? " disabled" : "");
-    const club = getClub(p.clubId);
-    card.innerHTML = `
-      <div class="avatar" style="background:${club.color}">${initials(p)}</div>
-      <div class="player-meta">
-        <div class="name">${p.fullName}</div>
-        <div class="sub">${club.short} · ${p.age} ans</div>
-      </div>
-      <span class="pos-tag">${p.pos}</span>
-    `;
-    card.addEventListener("click", () => {
-      if (disabled) return;
-      toggleGroupeSelection(p.id);
+  const players = filteredGroupePlayers();
+
+  CATS.forEach((cat) => {
+    const catPlayers = players.filter((p) => p.category === cat);
+    if (!catPlayers.length) return;
+    const label = document.createElement("div");
+    label.className = "roster-cat-label";
+    label.style.gridColumn = "1 / -1";
+    label.textContent = CATEGORY_LABELS[cat];
+    grid.appendChild(label);
+    catPlayers.forEach((p) => {
+      const selected = state.groupe.selectedIds.has(p.id);
+      const catFull = counts[p.category] >= quotas[p.category];
+      const disabled = !selected && catFull;
+      const card = document.createElement("div");
+      card.className = "player-card" + (selected ? " selected" : "") + (disabled ? " disabled" : "");
+      card.innerHTML = `
+        <div class="avatar" style="background:${FRANCE_COLOR}">${initials(p)}</div>
+        <div class="player-meta">
+          <div class="name">${p.fullName}</div>
+          <div class="sub">${p.age} ans</div>
+        </div>
+        <span class="pos-tag">${p.pos}</span>
+      `;
+      card.addEventListener("click", () => {
+        if (disabled) return;
+        toggleGroupeSelection(p.id);
+      });
+      grid.appendChild(card);
     });
-    grid.appendChild(card);
   });
 }
 
