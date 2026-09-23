@@ -203,9 +203,9 @@ select:focus { border-color: var(--accent); }
   text-transform: uppercase;
   cursor: pointer;
 }
-.btn-primary { background: var(--accent); color: white; }
-.btn-primary:hover { background: #2b7aff; }
-.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-primary { background: var(--accent); color: white; transition: background-color 0.4s ease, filter 0.15s ease; }
+.btn-primary:hover { filter: brightness(1.15); }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); transition: border-color 0.4s ease; }
 .btn-ghost:hover { border-color: var(--accent); }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-confirm { background: var(--pink); border-color: var(--pink); color: var(--charbon); }
@@ -260,9 +260,17 @@ select:focus { border-color: var(--accent); }
   display: grid;
   grid-template-columns: minmax(260px, 340px) 1fr;
   gap: 18px;
+  animation: compoEnter 0.45s ease;
 }
 @media (max-width: 900px) {
   .compo-layout { grid-template-columns: 1fr; }
+}
+@keyframes compoEnter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .compo-layout { animation: none; }
 }
 
 .panel-head-row {
@@ -310,6 +318,18 @@ select:focus { border-color: var(--accent); }
 }
 .club-picker-card:hover { border-color: var(--accent); transform: translateY(-2px); }
 .club-picker-card.current { border-color: var(--pink); }
+.club-picker-card.picked {
+  animation: cardPick 0.3s ease;
+  border-color: var(--pick-color, var(--pink));
+}
+@keyframes cardPick {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.06); box-shadow: 0 0 0 4px var(--pick-color, var(--pink)); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .club-picker-card.picked { animation: none; }
+}
 .club-picker-card .club-logo {
   width: 56px;
   height: 56px;
@@ -378,6 +398,7 @@ select:focus { border-color: var(--accent); }
   border-radius: 10px;
   border: 3px solid var(--pitch-line);
   overflow: hidden;
+  transition: background-color 0.5s ease;
 }
 .pitch::before {
   content: "";

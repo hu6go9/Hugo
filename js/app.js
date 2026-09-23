@@ -107,10 +107,16 @@ function renderClubPicker() {
     card.className = "club-picker-card" + (hasChosen && club.id === state.compo.activeClub ? " current" : "");
     card.innerHTML = `<img class="club-logo" src="${club.logo}" alt="${club.name}" /><span class="club-name">${club.name}</span>`;
     card.addEventListener("click", () => {
-      state.compo.activeClub = club.id;
-      state.compo.step = "squad";
-      scheduleSave();
-      renderCompoView();
+      // Petit "pop" de confirmation dans la couleur du club avant de
+      // basculer sur l'effectif — léger retour visuel sur le choix.
+      card.style.setProperty("--pick-color", club.color);
+      card.classList.add("picked");
+      setTimeout(() => {
+        state.compo.activeClub = club.id;
+        state.compo.step = "squad";
+        scheduleSave();
+        renderCompoView();
+      }, 200);
     });
     wrap.appendChild(card);
   });
@@ -235,11 +241,20 @@ function renderRoster() {
   });
 }
 
+// Personnalise l'espace de travail aux couleurs du club choisi (terrain,
+// bouton principal, focus...) — scoppé à l'élément donné pour ne pas déteindre
+// sur l'écran de choix du club.
+function applyClubTheme(club, el) {
+  el.style.setProperty("--accent", club.color);
+  el.style.setProperty("--pitch", club.color);
+}
+
 function renderActiveClubHeaders() {
   const club = getClub(state.compo.activeClub);
   const html = `<img src="${club.logo}" alt="${club.name}" /><span>${club.name}</span>`;
   document.getElementById("roster-club-header").innerHTML = html;
   document.getElementById("pitch-club-header").innerHTML = html;
+  applyClubTheme(club, document.getElementById("compo-layout"));
 }
 
 // Construit une image de partage dédiée (pas une capture de l'UI en direct) :
@@ -247,6 +262,7 @@ function renderActiveClubHeaders() {
 function renderShareCard() {
   const club = getClub(state.compo.activeClub);
   const compo = currentCompo();
+  applyClubTheme(club, document.getElementById("share-card"));
   const crest = document.getElementById("share-card-crest");
   crest.style.backgroundImage = `url("${club.logo}"), radial-gradient(circle at 32% 28%, #ffffff, #e7e7e7 78%)`;
   crest.style.borderColor = club.color;
