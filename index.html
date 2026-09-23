@@ -107,11 +107,22 @@
 
   <!-- ===================== VUE 2 : COMPO CLUB ===================== -->
   <section id="view-compo" class="view">
-    <div class="club-select-grid" id="club-select-grid"></div>
+    <!-- --- Étape 1 : choix du club --- -->
+    <div class="club-picker" id="club-picker">
+      <div class="club-picker-header">
+        <h2>Choisis ton club</h2>
+        <p>Compose ensuite le onze type, poste par poste.</p>
+      </div>
+      <div class="club-picker-grid" id="club-picker-grid"></div>
+    </div>
 
-    <div class="compo-layout">
+    <!-- --- Étape 2 : effectif + terrain --- -->
+    <div class="compo-layout" id="compo-layout" style="display:none;">
       <div class="panel">
-        <div class="active-club-header" id="roster-club-header"></div>
+        <div class="panel-head-row">
+          <div class="active-club-header" id="roster-club-header"></div>
+          <button class="btn btn-ghost" id="change-club-btn" type="button">Changer de club</button>
+        </div>
         <div class="roster-cat-label" style="margin-top:0;">Effectif</div>
         <div class="roster-list" id="roster-list"></div>
       </div>

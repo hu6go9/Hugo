@@ -87,6 +87,7 @@
 }
 
 :root {
+  color-scheme: dark;
   --charbon: #262626;
   --charbon-light: #333333;
   --charbon-lighter: #3d3d3d;
@@ -525,35 +526,60 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
   .compo-layout { grid-template-columns: 1fr; }
 }
 
-.club-select-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-.club-chip {
+.panel-head-row {
   display: flex;
   align-items: center;
-  gap: 7px;
-  border: 2px solid var(--border);
-  background: var(--bg-card);
-  border-radius: 999px;
-  padding: 7px 12px 7px 7px;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 0.78rem;
-  color: var(--text);
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
 }
-.club-chip .club-logo {
-  width: 22px;
-  height: 22px;
+
+/* ---- Étape 1 : choix du club ---- */
+.club-picker { max-width: 980px; margin: 20px auto 0; }
+.club-picker-header { text-align: center; margin-bottom: 22px; }
+.club-picker-header h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-size: 1.7rem;
+  color: var(--text);
+  margin: 0 0 6px;
+}
+.club-picker-header p { color: var(--text-dim); margin: 0; font-size: 0.9rem; }
+
+.club-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+}
+.club-picker-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 10px;
+  cursor: pointer;
+  text-align: center;
+  font-family: inherit;
+  color: var(--text);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.club-picker-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.club-picker-card.current { border-color: var(--pink); }
+.club-picker-card .club-logo {
+  width: 56px;
+  height: 56px;
   object-fit: contain;
   background: #fff;
   border-radius: 50%;
-  padding: 2px;
+  padding: 6px;
   flex-shrink: 0;
 }
-.club-chip.active { border-color: var(--pink); }
+.club-picker-card .club-name { font-weight: 700; font-size: 0.82rem; line-height: 1.25; }
 
 .active-club-header {
   display: flex;

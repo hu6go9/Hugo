@@ -22,6 +22,7 @@ const state = {
   compo: {
     activeClub: CLUBS[0].id,
     byClub: {}, // clubId -> { formation, assignments: { slotCode: playerId } }
+    step: "pick", // "pick" (choix du club) ou "squad" (effectif + terrain) — jamais persisté
   },
   franceCompo: { formation: "4-3-3", assignments: {} },
 };
@@ -103,7 +104,10 @@ function initTabs() {
       state.activeTab = btn.dataset.tab;
       document.querySelectorAll("nav.tabs button").forEach((b) => b.classList.toggle("active", b === btn));
       document.querySelectorAll(".view").forEach((v) => v.classList.toggle("active", v.id === "view-" + btn.dataset.tab));
-      if (btn.dataset.tab === "compo") syncRosterHeight("club");
+      if (btn.dataset.tab === "compo") {
+        state.compo.step = "pick";
+        renderCompoView();
+      }
       if (btn.dataset.tab === "groupe" && state.groupe.subTab === "onze") syncRosterHeight("france");
     });
   });
@@ -335,18 +339,22 @@ function currentCompo() {
   return state.compo.byClub[state.compo.activeClub];
 }
 
-function renderClubSelector() {
-  const wrap = document.getElementById("club-select-grid");
+function renderClubPicker() {
+  const wrap = document.getElementById("club-picker-grid");
   wrap.innerHTML = "";
+  const hasChosen = Object.keys(state.compo.byClub).length > 0;
   CLUBS.forEach((club) => {
-    const chip = document.createElement("div");
-    chip.className = "club-chip" + (club.id === state.compo.activeClub ? " active" : "");
-    chip.innerHTML = `<img class="club-logo" src="${club.logo}" alt="${club.name}" />${club.short}`;
-    chip.addEventListener("click", () => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "club-picker-card" + (hasChosen && club.id === state.compo.activeClub ? " current" : "");
+    card.innerHTML = `<img class="club-logo" src="${club.logo}" alt="${club.name}" /><span class="club-name">${club.name}</span>`;
+    card.addEventListener("click", () => {
       state.compo.activeClub = club.id;
+      state.compo.step = "squad";
+      scheduleSave();
       renderCompoView();
     });
-    wrap.appendChild(chip);
+    wrap.appendChild(card);
   });
 }
 
@@ -467,7 +475,12 @@ function renderActiveClubHeaders() {
 }
 
 function renderCompoView() {
-  renderClubSelector();
+  const picking = state.compo.step !== "squad";
+  document.getElementById("club-picker").style.display = picking ? "block" : "none";
+  document.getElementById("compo-layout").style.display = picking ? "none" : "grid";
+  renderClubPicker();
+  if (picking) return;
+
   renderActiveClubHeaders();
   renderFormationSelect();
   renderPitch("club");
@@ -489,6 +502,10 @@ function initCompoControls() {
     renderCompoView();
   });
   document.getElementById("compo-share").addEventListener("click", () => shareElement(document.getElementById("pitch-wrap"), `compo-${state.compo.activeClub}.png`));
+  document.getElementById("change-club-btn").addEventListener("click", () => {
+    state.compo.step = "pick";
+    renderCompoView();
+  });
 }
 
 // ==========================================================
