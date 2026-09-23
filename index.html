@@ -41,18 +41,20 @@
             <option value="26">Groupe de 26</option>
           </select>
           <input type="search" id="groupe-search" placeholder="Rechercher un joueur..." style="min-width:220px;" />
-          <div class="chip-group" id="groupe-filters">
-            <button class="chip active" data-cat="ALL">Tous</button>
-            <button class="chip" data-cat="GK">Gardiens</button>
-            <button class="chip" data-cat="DEF">Défenseurs</button>
-            <button class="chip" data-cat="MID">Milieux</button>
-            <button class="chip" data-cat="ATT">Attaquants</button>
-          </div>
           <div class="spacer"></div>
           <button class="btn btn-ghost" id="groupe-reset">Réinitialiser</button>
         </div>
 
         <div class="quota-row" id="quota-row"></div>
+
+        <div class="step-nav">
+          <button class="btn btn-ghost step-nav-btn" id="step-prev" type="button">‹ Précédent</button>
+          <div class="step-info">
+            <span class="step-index" id="step-index">Étape 1/4</span>
+            <span class="step-label" id="step-label">Gardiens</span>
+          </div>
+          <button class="btn btn-primary step-nav-btn" id="step-next" type="button">Suivant ›</button>
+        </div>
 
         <div class="grid-players" id="groupe-grid"></div>
       </div>

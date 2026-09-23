@@ -16,7 +16,7 @@ const state = {
     squadSize: 26,
     selectedIds: new Set(),
     search: "",
-    filterCat: "ALL",
+    filterCat: "GK",
     subTab: "pool",
   },
   compo: {
@@ -132,14 +132,17 @@ function renderQuotaBar() {
   wrap.innerHTML = "";
   CATS.forEach((cat) => {
     const full = counts[cat] >= quotas[cat];
-    const div = document.createElement("div");
-    div.className = "quota-card" + (full ? " full" : "");
-    div.innerHTML = `
+    const current = cat === state.groupe.filterCat;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "quota-card" + (full ? " full" : "") + (current ? " current" : "");
+    btn.innerHTML = `
       <div class="label">${CATEGORY_LABELS[cat]}</div>
       <div class="count">${counts[cat]} / ${quotas[cat]}</div>
       <div class="bar"><span style="width:${Math.min(100, (counts[cat] / quotas[cat]) * 100)}%"></span></div>
     `;
-    wrap.appendChild(div);
+    btn.addEventListener("click", () => setGroupeStep(cat));
+    wrap.appendChild(btn);
   });
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
   const totalMax = Object.values(quotas).reduce((a, b) => a + b, 0);
@@ -162,14 +165,18 @@ function renderProgressFloat() {
 
   document.getElementById("progress-float-cats").innerHTML = CATS.map((cat) => {
     const full = counts[cat] >= quotas[cat];
-    return `<div class="progress-cat${full ? " full" : ""}"><span class="cat-code">${CATEGORY_SHORT[cat]}</span><span class="cat-count">${counts[cat]}/${quotas[cat]}</span></div>`;
+    const current = cat === state.groupe.filterCat ? " current" : "";
+    return `<button type="button" class="progress-cat${full ? " full" : ""}${current}" data-cat="${cat}"><span class="cat-code">${CATEGORY_SHORT[cat]}</span><span class="cat-count">${counts[cat]}/${quotas[cat]}</span></button>`;
   }).join("");
+  document.querySelectorAll("#progress-float-cats .progress-cat").forEach((btn) => {
+    btn.addEventListener("click", () => setGroupeStep(btn.dataset.cat));
+  });
 }
 
 function filteredGroupePlayers() {
   const { search, filterCat } = state.groupe;
   return PLAYERS.filter((p) => {
-    if (filterCat !== "ALL" && p.category !== filterCat) return false;
+    if (p.category !== filterCat) return false;
     if (search && !p.fullName.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
@@ -182,35 +189,51 @@ function renderGroupePool() {
   const counts = groupeCounts();
   const players = filteredGroupePlayers();
 
-  CATS.forEach((cat) => {
-    const catPlayers = players.filter((p) => p.category === cat);
-    if (!catPlayers.length) return;
-    const label = document.createElement("div");
-    label.className = "roster-cat-label";
-    label.style.gridColumn = "1 / -1";
-    label.textContent = CATEGORY_LABELS[cat];
-    grid.appendChild(label);
-    catPlayers.forEach((p) => {
-      const selected = state.groupe.selectedIds.has(p.id);
-      const catFull = counts[p.category] >= quotas[p.category];
-      const disabled = !selected && catFull;
-      const card = document.createElement("div");
-      card.className = "player-card" + (selected ? " selected" : "") + (disabled ? " disabled" : "");
-      card.innerHTML = `
-        <div class="avatar" style="background:${FRANCE_COLOR}">${initials(p)}</div>
-        <div class="player-meta">
-          <div class="name">${p.fullName}</div>
-          <div class="sub">${p.age} ans</div>
-        </div>
-        <span class="pos-tag">${p.pos}</span>
-      `;
-      card.addEventListener("click", () => {
-        if (disabled) return;
-        toggleGroupeSelection(p.id);
-      });
-      grid.appendChild(card);
+  players.forEach((p) => {
+    const selected = state.groupe.selectedIds.has(p.id);
+    const catFull = counts[p.category] >= quotas[p.category];
+    const disabled = !selected && catFull;
+    const card = document.createElement("div");
+    card.className = "player-card" + (selected ? " selected" : "") + (disabled ? " disabled" : "");
+    card.innerHTML = `
+      <div class="avatar" style="background:${FRANCE_COLOR}">${initials(p)}</div>
+      <div class="player-meta">
+        <div class="name">${p.fullName}</div>
+        <div class="sub">${p.age} ans</div>
+      </div>
+      <span class="pos-tag">${p.pos}</span>
+    `;
+    card.addEventListener("click", () => {
+      if (disabled) return;
+      toggleGroupeSelection(p.id);
     });
+    grid.appendChild(card);
   });
+
+  if (!players.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty-state";
+    empty.style.gridColumn = "1 / -1";
+    empty.textContent = "Aucun joueur ne correspond à ta recherche.";
+    grid.appendChild(empty);
+  }
+}
+
+function setGroupeStep(cat) {
+  state.groupe.filterCat = cat;
+  state.groupe.search = "";
+  document.getElementById("groupe-search").value = "";
+  renderQuotaBar();
+  renderGroupePool();
+  renderStepNav();
+}
+
+function renderStepNav() {
+  const idx = CATS.indexOf(state.groupe.filterCat);
+  document.getElementById("step-index").textContent = `Étape ${idx + 1}/${CATS.length}`;
+  document.getElementById("step-label").textContent = CATEGORY_LABELS[state.groupe.filterCat];
+  document.getElementById("step-prev").disabled = idx <= 0;
+  document.getElementById("step-next").disabled = idx >= CATS.length - 1;
 }
 
 function pruneFranceAssignments() {
@@ -266,6 +289,7 @@ function renderGroupeView() {
   renderGroupePool();
   renderGroupeSummary();
   renderProgressFloat();
+  renderStepNav();
 }
 
 function initGroupeControls() {
@@ -278,16 +302,18 @@ function initGroupeControls() {
     state.groupe.search = e.target.value;
     renderGroupePool();
   });
-  document.querySelectorAll("#groupe-filters .chip").forEach((chip) => {
-    chip.addEventListener("click", () => {
-      state.groupe.filterCat = chip.dataset.cat;
-      document.querySelectorAll("#groupe-filters .chip").forEach((c) => c.classList.toggle("active", c === chip));
-      renderGroupePool();
-    });
+  document.getElementById("step-prev").addEventListener("click", () => {
+    const idx = CATS.indexOf(state.groupe.filterCat);
+    if (idx > 0) setGroupeStep(CATS[idx - 1]);
+  });
+  document.getElementById("step-next").addEventListener("click", () => {
+    const idx = CATS.indexOf(state.groupe.filterCat);
+    if (idx < CATS.length - 1) setGroupeStep(CATS[idx + 1]);
   });
   document.getElementById("groupe-reset").addEventListener("click", () => {
     if (!confirm("Réinitialiser la sélection du groupe ?")) return;
     state.groupe.selectedIds.clear();
+    state.groupe.filterCat = "GK";
     state.franceCompo.assignments = {};
     scheduleSave();
     renderGroupeView();

@@ -256,19 +256,6 @@ input[type="search"], select {
 }
 input[type="search"]:focus, select:focus { border-color: var(--accent); }
 
-.chip-group { display: flex; gap: 6px; flex-wrap: wrap; }
-.chip {
-  border: 1px solid var(--border);
-  background: var(--bg-card);
-  color: var(--text-dim);
-  padding: 7px 13px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  font-weight: 600;
-}
-.chip.active { background: var(--pink); border-color: var(--pink); color: var(--charbon); }
-
 .btn {
   border: none;
   border-radius: var(--radius-sm);
@@ -297,15 +284,55 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
 }
 .quota-card {
   background: var(--bg-card);
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 12px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
 }
+.quota-card:hover { border-color: var(--accent); }
+.quota-card.current { border-color: var(--pink); }
 .quota-card .label { font-size: 0.75rem; color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 .quota-card .count { font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700; margin-top: 2px; }
 .quota-card .bar { height: 5px; background: var(--border); border-radius: 4px; margin-top: 8px; overflow: hidden; }
 .quota-card .bar > span { display: block; height: 100%; background: var(--accent); transition: width 0.2s ease; }
 .quota-card.full .bar > span { background: var(--pink); }
+
+/* ---- Groupe: navigation par étapes (un poste à la fois) ---- */
+.step-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 4px 0;
+}
+.step-nav-btn { flex-shrink: 0; }
+.step-nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.step-info { text-align: center; }
+.step-index {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-weight: 600;
+}
+.step-label {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text);
+  margin-top: 2px;
+}
 
 #subview-pool { padding-bottom: 100px; }
 
@@ -362,6 +389,8 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
   border: 1px solid var(--border);
   border-radius: 999px;
   padding: 5px 10px;
+  cursor: pointer;
+  font-family: inherit;
 }
 .progress-cat .cat-code {
   font-family: var(--font-display);
@@ -374,6 +403,7 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
 .progress-cat .cat-count { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text); }
 .progress-cat.full { border-color: var(--pink); }
 .progress-cat.full .cat-count { color: var(--pink); }
+.progress-cat.current { border-color: var(--accent); border-width: 2px; padding: 4px 9px; }
 
 .progress-float-btn {
   border: none;
