@@ -432,11 +432,31 @@ function pitchWrapElId(context) {
 }
 
 const DESKTOP_LAYOUT_QUERY = window.matchMedia("(min-width: 901px)");
+const PITCH_MIN_HEIGHT = 480; // en dessous, le terrain devient trop petit pour rester lisible
+
+// Borne la hauteur du terrain à l'espace visible sous son point de départ,
+// pour qu'il tienne toujours entier à l'écran (jamais besoin de scroller
+// la page pour atteindre les attaquants ou les gardiens).
+function syncPitchHeight(context) {
+  const pitch = document.getElementById(pitchElId(context));
+  if (!pitch) return;
+  if (!DESKTOP_LAYOUT_QUERY.matches) {
+    pitch.style.height = "";
+    return;
+  }
+  pitch.style.height = ""; // repart de la taille naturelle pour mesurer l'espace réellement disponible
+  const rect = pitch.getBoundingClientRect();
+  if (rect.height <= 0) return; // pas encore visible (ex: onglet caché)
+  const budget = window.innerHeight - rect.top - 20;
+  const target = Math.max(PITCH_MIN_HEIGHT, Math.min(rect.height, budget));
+  pitch.style.height = target + "px";
+}
 
 function syncRosterHeight(context) {
   const roster = document.getElementById(rosterElId(context));
   const pitchWrap = document.getElementById(pitchWrapElId(context));
   if (!roster || !pitchWrap) return;
+  syncPitchHeight(context);
   if (DESKTOP_LAYOUT_QUERY.matches) {
     const height = pitchWrap.getBoundingClientRect().height;
     if (height <= 0) return; // pitch pas encore visible/rendu (ex: onglet caché) : on ne casse pas la hauteur déjà en place

@@ -647,10 +647,24 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
   align-self: start;
 }
 
+/* Le terrain doit toujours tenir entièrement dans l'écran (jamais besoin de
+   scroller la page pour voir les attaquants) : sur les grands écrans, sa
+   hauteur est bornée en JS (syncPitchHeight) à l'espace visible, et sa
+   largeur suit via aspect-ratio ; la liste de joueurs défile de son côté
+   sans jamais faire bouger le terrain. */
+@media (min-width: 901px) {
+  .pitch-wrap .pitch {
+    width: auto;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+}
+
 .pitch {
   position: relative;
   width: 100%;
   aspect-ratio: 2 / 3;
+  container-type: inline-size;
   background-color: var(--pitch);
   background-image: url("../assets/brand/patterns/pattern-mid-on-black.webp"),
     repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 10%, rgba(0, 0, 0, 0.05) 10%, rgba(0, 0, 0, 0.05) 20%);
@@ -781,6 +795,12 @@ footer.credit {
 @media (max-width: 600px) {
   .brand span.full { display: none; }
   main { padding: 12px; }
+}
+
+/* Taille des pastilles du terrain adaptée à la largeur réelle du terrain
+   (et non à celle de l'écran) : s'applique aussi bien sur mobile que sur
+   un terrain rétréci en hauteur sur un petit écran de bureau. */
+@container (max-width: 480px) {
   .pitch-slot { width: 52px; height: 52px; }
   .pitch-slot .avatar { width: 22px; height: 22px; font-size: 0.5rem; }
   .pitch-slot .slot-name { font-size: 0.52rem; max-width: 50px; }
