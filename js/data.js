@@ -1,5 +1,5 @@
 /**
- * Données MOCKÉES pour le prototype "Composeur d'équipe Ligue 1".
+ * Données MOCKÉES pour le prototype "Compos Ligue 1".
  * Clubs = les 18 clubs de Ligue 1 McDonald's (saison confirmée par Hugo),
  * couleurs extraites automatiquement des vrais blasons fournis, logos en local.
  * Joueurs = générés aléatoirement (seed fixe) -> à remplacer par l'API réelle.

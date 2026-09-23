@@ -1,5 +1,5 @@
 /* ==========================================================
-   Composeur d'équipe Ligue 1 — prototype front-end (mock data)
+   Compos Ligue 1 — prototype front-end (mock data)
    ========================================================== */
 
 const STORAGE_KEY = "l1-composer-state-v1";
