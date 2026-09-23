@@ -64,6 +64,29 @@ function initials(p) {
   return (p.firstName[0] + p.lastName[0]).toUpperCase();
 }
 
+// Confirmation en deux clics, sans window.confirm() (bloqué/inerte dans
+// certains contextes intégrés) : premier clic -> le bouton passe en mode
+// "Confirmer ?", second clic dans les 3s -> exécute l'action.
+function initConfirmButton(btn, defaultLabel, onConfirm) {
+  let timer = null;
+  const reset = () => {
+    clearTimeout(timer);
+    timer = null;
+    btn.textContent = defaultLabel;
+    btn.classList.remove("btn-confirm");
+  };
+  btn.addEventListener("click", () => {
+    if (timer) {
+      reset();
+      onConfirm();
+      return;
+    }
+    btn.textContent = "Confirmer ?";
+    btn.classList.add("btn-confirm");
+    timer = setTimeout(reset, 3000);
+  });
+}
+
 // ==========================================================
 // COMPO 11 PAR CLUB
 // ==========================================================
@@ -239,13 +262,17 @@ function initCompoControls() {
     scheduleSave();
     renderCompoView();
   });
-  document.getElementById("compo-reset").addEventListener("click", () => {
-    if (!confirm("Réinitialiser cette composition ?")) return;
+  initConfirmButton(document.getElementById("compo-reset"), "Réinitialiser", () => {
     currentCompo().assignments = {};
     scheduleSave();
     renderCompoView();
   });
-  document.getElementById("compo-share").addEventListener("click", () => shareElement(document.getElementById("pitch-wrap"), `compo-${state.compo.activeClub}.png`));
+  document.getElementById("compo-share").addEventListener("click", () => {
+    // Ouverture synchrone (au clic) pour éviter que le navigateur bloque
+    // la fenêtre une fois l'export (asynchrone) terminé.
+    const shareWindow = window.open("", "_blank");
+    shareElement(document.getElementById("pitch-wrap"), `compo-${state.compo.activeClub}.png`, shareWindow);
+  });
   document.getElementById("change-club-btn").addEventListener("click", () => {
     state.compo.step = "pick";
     renderCompoView();
@@ -364,28 +391,46 @@ function handleDrop(x, y) {
 }
 
 // ---------------- Partage (export image) ----------------
-async function shareElement(el, filename) {
+// `targetWindow` est un onglet déjà ouvert (de façon synchrone, au clic) où
+// afficher l'image une fois l'export terminé : ouvrir un nouvel onglet APRÈS
+// un traitement asynchrone est bloqué par la plupart des navigateurs.
+async function shareElement(el, filename, targetWindow) {
+  const abort = (message) => {
+    if (targetWindow && !targetWindow.closed) {
+      targetWindow.document.write(`<p style="font:16px sans-serif;padding:24px;">${message}</p>`);
+    }
+  };
   if (typeof html2canvas === "undefined") {
-    alert("Export indisponible hors-ligne (librairie html2canvas non chargée).");
+    abort("Export indisponible (librairie non chargée).");
     return;
   }
-  const canvas = await html2canvas(el, { backgroundColor: "#0b1224", scale: 2 });
-  canvas.toBlob(async (blob) => {
-    if (!blob) return;
-    const file = new File([blob], filename, { type: "image/png" });
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({ files: [file], title: "Ma composition Ligue 1" });
+  try {
+    const canvas = await html2canvas(el, { backgroundColor: "#262626", scale: 2 });
+    canvas.toBlob(async (blob) => {
+      if (!blob) {
+        abort("Export impossible.");
         return;
-      } catch (e) {
-        /* annulé ou non supporté -> fallback téléchargement */
       }
-    }
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-  }, "image/png");
+      const file = new File([blob], filename, { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          if (targetWindow && !targetWindow.closed) targetWindow.close();
+          await navigator.share({ files: [file], title: "Ma composition Ligue 1" });
+          return;
+        } catch (e) {
+          /* annulé ou non supporté -> fallback nouvel onglet */
+        }
+      }
+      const url = URL.createObjectURL(blob);
+      if (targetWindow && !targetWindow.closed) {
+        targetWindow.location.href = url;
+      } else {
+        window.open(url, "_blank");
+      }
+    }, "image/png");
+  } catch (e) {
+    abort("Export impossible.");
+  }
 }
 
 // ==========================================================

@@ -208,6 +208,7 @@ select:focus { border-color: var(--accent); }
 .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
 .btn-ghost:hover { border-color: var(--accent); }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-confirm { background: var(--pink); border-color: var(--pink); color: var(--charbon); }
 
 .spacer { flex: 1; }
 
@@ -472,6 +473,7 @@ select:focus { border-color: var(--accent); }
 }
 
 .formation-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+.formation-actions { display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
 
 .save-indicator {
   font-size: 0.72rem;
