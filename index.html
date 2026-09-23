@@ -27,13 +27,36 @@
 
   <!-- ===================== VUE 1 : ÉQUIPE DE FRANCE ===================== -->
   <section id="view-groupe" class="view active">
-    <nav class="sub-tabs">
-      <button class="active" data-subtab="pool">Groupe</button>
-      <button data-subtab="onze">Onze de départ</button>
-    </nav>
+    <!-- --- Étape 0 : que veux-tu faire ? --- -->
+    <div class="landing" id="groupe-landing">
+      <div class="landing-header">
+        <h2>Équipe de France</h2>
+        <p>Compose ton groupe, puis pose ton onze de départ.</p>
+      </div>
+      <div class="landing-grid">
+        <button type="button" class="landing-card" id="landing-pool-btn">
+          <span class="landing-card-title">Composer mon groupe</span>
+          <span class="landing-card-sub" id="landing-pool-sub">0 / 26 joueurs sélectionnés</span>
+        </button>
+        <button type="button" class="landing-card" id="landing-onze-btn">
+          <span class="landing-card-title">Poser mon onze de départ</span>
+          <span class="landing-card-sub" id="landing-onze-sub">à partir de ton groupe</span>
+        </button>
+      </div>
+    </div>
 
-    <!-- --- Sous-vue : sélection du groupe --- -->
-    <div class="subview active" id="subview-pool">
+    <!-- --- Étape 1 : groupe / onze --- -->
+    <div id="groupe-workspace" style="display:none;">
+      <div class="workspace-head-row">
+        <button class="btn btn-ghost" id="groupe-back-btn" type="button">‹ Retour</button>
+      </div>
+      <nav class="sub-tabs">
+        <button class="active" data-subtab="pool">Groupe</button>
+        <button data-subtab="onze">Onze de départ</button>
+      </nav>
+
+      <!-- --- Sous-vue : sélection du groupe --- -->
+      <div class="subview active" id="subview-pool">
       <div class="panel" style="margin-bottom:16px;">
         <div class="toolbar">
           <select id="groupe-size">
@@ -103,13 +126,14 @@
         </div>
       </div>
     </div>
+    </div>
   </section>
 
   <!-- ===================== VUE 2 : COMPO CLUB ===================== -->
   <section id="view-compo" class="view">
     <!-- --- Étape 1 : choix du club --- -->
-    <div class="club-picker" id="club-picker">
-      <div class="club-picker-header">
+    <div class="landing" id="club-picker">
+      <div class="landing-header">
         <h2>Choisis ton club</h2>
         <p>Compose ensuite le onze type, poste par poste.</p>
       </div>

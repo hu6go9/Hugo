@@ -18,6 +18,7 @@ const state = {
     search: "",
     filterCat: "GK",
     subTab: "pool",
+    screen: "landing", // "landing" (choix groupe/onze) ou "workspace" — jamais persisté
   },
   compo: {
     activeClub: CLUBS[0].id,
@@ -108,7 +109,10 @@ function initTabs() {
         state.compo.step = "pick";
         renderCompoView();
       }
-      if (btn.dataset.tab === "groupe" && state.groupe.subTab === "onze") syncRosterHeight("france");
+      if (btn.dataset.tab === "groupe") {
+        state.groupe.screen = "landing";
+        renderGroupeScreen();
+      }
     });
   });
 }
@@ -127,6 +131,14 @@ function groupeCounts() {
     if (p) counts[p.category]++;
   });
   return counts;
+}
+
+function groupeProgress() {
+  const quotas = groupeQuotas();
+  const counts = groupeCounts();
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+  const totalMax = Object.values(quotas).reduce((a, b) => a + b, 0);
+  return { total, totalMax, remaining: Math.max(0, totalMax - total), complete: total >= totalMax };
 }
 
 function renderQuotaBar() {
@@ -148,18 +160,14 @@ function renderQuotaBar() {
     btn.addEventListener("click", () => setGroupeStep(cat));
     wrap.appendChild(btn);
   });
-  const total = Object.values(counts).reduce((a, b) => a + b, 0);
-  const totalMax = Object.values(quotas).reduce((a, b) => a + b, 0);
+  const { total, totalMax } = groupeProgress();
   document.getElementById("groupe-total").textContent = `${total} / ${totalMax} joueurs sélectionnés`;
 }
 
 function renderProgressFloat() {
   const quotas = groupeQuotas();
   const counts = groupeCounts();
-  const total = Object.values(counts).reduce((a, b) => a + b, 0);
-  const totalMax = Object.values(quotas).reduce((a, b) => a + b, 0);
-  const remaining = Math.max(0, totalMax - total);
-  const complete = total >= totalMax;
+  const { total, totalMax, remaining, complete } = groupeProgress();
 
   document.getElementById("progress-float-value").textContent = `${total}/${totalMax}`;
   document.getElementById("progress-float-sub").textContent = complete
@@ -294,6 +302,45 @@ function renderGroupeView() {
   renderGroupeSummary();
   renderProgressFloat();
   renderStepNav();
+}
+
+function renderGroupeLanding() {
+  const { total, totalMax } = groupeProgress();
+  document.getElementById("landing-pool-sub").textContent = `${total} / ${totalMax} joueurs sélectionnés`;
+
+  const assignedCount = Object.keys(state.franceCompo.assignments).length;
+  const onzeSub = document.getElementById("landing-onze-sub");
+  if (total === 0) {
+    onzeSub.textContent = "Sélectionne d'abord ton groupe";
+  } else {
+    const formation = FORMATIONS[state.franceCompo.formation];
+    onzeSub.textContent = `${formation.label} · ${assignedCount} / ${formation.slots.length} postes pourvus`;
+  }
+}
+
+function goToGroupeScreen(screen, subTab) {
+  state.groupe.screen = screen;
+  if (subTab) state.groupe.subTab = subTab;
+  renderGroupeScreen();
+}
+
+function renderGroupeScreen() {
+  const inWorkspace = state.groupe.screen === "workspace";
+  document.getElementById("groupe-landing").style.display = inWorkspace ? "none" : "block";
+  document.getElementById("groupe-workspace").style.display = inWorkspace ? "block" : "none";
+  renderGroupeLanding();
+  if (!inWorkspace) return;
+
+  document.querySelectorAll("nav.sub-tabs button").forEach((b) => b.classList.toggle("active", b.dataset.subtab === state.groupe.subTab));
+  document.querySelectorAll(".subview").forEach((v) => v.classList.toggle("active", v.id === "subview-" + state.groupe.subTab));
+  renderGroupeView();
+  if (state.groupe.subTab === "onze") renderFranceOnzeView();
+}
+
+function initGroupeLanding() {
+  document.getElementById("landing-pool-btn").addEventListener("click", () => goToGroupeScreen("workspace", "pool"));
+  document.getElementById("landing-onze-btn").addEventListener("click", () => goToGroupeScreen("workspace", "onze"));
+  document.getElementById("groupe-back-btn").addEventListener("click", () => goToGroupeScreen("landing"));
 }
 
 function initGroupeControls() {
@@ -704,16 +751,14 @@ function init() {
   loadState();
   initTabs();
   initSubTabs();
+  initGroupeLanding();
   initGroupeControls();
   initCompoControls();
   initFranceCompoControls();
   document.getElementById("groupe-size").value = String(state.groupe.squadSize);
   pruneFranceAssignments();
-  renderGroupeView();
+  renderGroupeScreen();
   renderCompoView();
-  if (state.groupe.subTab === "onze") {
-    document.querySelector('nav.sub-tabs button[data-subtab="onze"]').click();
-  }
 
   let resizeTimer = null;
   window.addEventListener("resize", () => {
