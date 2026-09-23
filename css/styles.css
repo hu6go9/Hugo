@@ -636,7 +636,7 @@ input[type="search"]:focus, select:focus { border-color: var(--accent); }
 }
 #pitch-club-header { margin-bottom: 0; margin-right: auto; }
 
-.roster-list { display: flex; flex-direction: column; gap: 8px; padding-right: 4px; }
+.roster-list { display: flex; flex-direction: column; gap: 8px; padding-right: 4px; overscroll-behavior: contain; }
 .roster-cat-label { font-size: 0.72rem; text-transform: uppercase; color: var(--text-dim); font-weight: 700; margin: 10px 0 2px; }
 
 .pitch-wrap {

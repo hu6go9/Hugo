@@ -458,7 +458,13 @@ function syncRosterHeight(context) {
   if (!roster || !pitchWrap) return;
   syncPitchHeight(context);
   if (DESKTOP_LAYOUT_QUERY.matches) {
-    const height = pitchWrap.getBoundingClientRect().height;
+    // Aligne le bas de la liste sur le bas du terrain (et non sa hauteur brute) :
+    // les deux panneaux n'ont pas le même contenu au-dessus (en-tête club,
+    // bouton "Changer de club"...), donc caler juste la hauteur du terrain
+    // pouvait faire déborder la liste hors de l'écran.
+    const pitchWrapBottom = pitchWrap.getBoundingClientRect().bottom;
+    const rosterTop = roster.getBoundingClientRect().top;
+    const height = pitchWrapBottom - rosterTop;
     if (height <= 0) return; // pitch pas encore visible/rendu (ex: onglet caché) : on ne casse pas la hauteur déjà en place
     roster.style.maxHeight = height + "px";
     roster.style.overflowY = "auto";
