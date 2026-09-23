@@ -504,3 +504,83 @@ footer.credit {
   .pitch-slot .avatar { width: 22px; height: 22px; font-size: 0.5rem; }
   .pitch-slot .slot-name { font-size: 0.52rem; max-width: 50px; }
 }
+
+/* ---- Carte de partage (habillage brand dédié, hors écran, capturé pour l'export) ---- */
+.share-card {
+  position: fixed;
+  top: 0;
+  left: -10000px;
+  width: 640px;
+  box-sizing: border-box;
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  background-color: var(--charbon);
+  background-image: url("../assets/brand/patterns/pattern-dark-on-black.webp");
+  background-size: 220px auto;
+  background-repeat: repeat;
+}
+.share-card-header { display: flex; align-items: center; gap: 12px; }
+.share-card-logo { height: 36px; width: auto; object-fit: contain; }
+.share-card-wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.3rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text);
+}
+
+.share-card-club { display: flex; align-items: center; gap: 18px; }
+.share-card-crest {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: #fff;
+  padding: 8px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.share-card-club-info { min-width: 0; }
+.share-card-club-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2rem;
+  line-height: 1.05;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.share-card-formation {
+  display: inline-block;
+  margin-top: 8px;
+  background: var(--pink);
+  color: var(--charbon);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.3px;
+  padding: 4px 14px;
+  border-radius: 999px;
+}
+
+.share-card-pitch { width: 100%; }
+
+.share-card-footer {
+  text-align: center;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+.share-card-cta {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--pink);
+}
+.share-card-sub {
+  margin-top: 6px;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+}

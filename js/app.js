@@ -171,12 +171,9 @@ function syncRosterHeight() {
   }
 }
 
-function renderPitch() {
-  const compo = currentCompo();
+function buildPitchSlots(pitchEl, compo, color, { interactive } = { interactive: true }) {
   const formation = FORMATIONS[compo.formation];
-  const pitch = document.getElementById("pitch");
-  pitch.querySelectorAll(".pitch-slot").forEach((el) => el.remove());
-  const color = avatarColor();
+  pitchEl.querySelectorAll(".pitch-slot").forEach((el) => el.remove());
 
   formation.slots.forEach((slot) => {
     const category = POSITIONS[slot.pos].category;
@@ -194,12 +191,16 @@ function renderPitch() {
       el.classList.toggle("out-of-position", outOfPosition);
       const badge = outOfPosition ? `<span class="oop-badge" title="Hors poste naturel (${player.pos})">${player.pos}</span>` : "";
       el.innerHTML = `<div class="avatar" style="background:${color}">${initials(player)}</div><div class="slot-name">${player.name}</div>${badge}`;
-      el.addEventListener("pointerdown", (e) => startDrag(e, { type: "slot", slotCode: slot.code, player }));
+      if (interactive) el.addEventListener("pointerdown", (e) => startDrag(e, { type: "slot", slotCode: slot.code, player }));
     } else {
       el.innerHTML = `<div class="slot-label">${slot.pos}</div>`;
     }
-    pitch.appendChild(el);
+    pitchEl.appendChild(el);
   });
+}
+
+function renderPitch() {
+  buildPitchSlots(document.getElementById("pitch"), currentCompo(), avatarColor());
 }
 
 function renderRoster() {
@@ -241,6 +242,18 @@ function renderActiveClubHeaders() {
   document.getElementById("pitch-club-header").innerHTML = html;
 }
 
+// Construit une image de partage dédiée (pas une capture de l'UI en direct) :
+// habillage brand complet, pensée pour être reconnaissable sur les réseaux.
+function renderShareCard() {
+  const club = getClub(state.compo.activeClub);
+  const compo = currentCompo();
+  document.getElementById("share-card-crest").src = club.logo;
+  document.getElementById("share-card-crest").alt = club.name;
+  document.getElementById("share-card-club-name").textContent = club.name;
+  document.getElementById("share-card-formation").textContent = FORMATIONS[compo.formation].label;
+  buildPitchSlots(document.getElementById("share-card-pitch"), compo, avatarColor(), { interactive: false });
+}
+
 function renderCompoView() {
   const picking = state.compo.step !== "squad";
   document.getElementById("club-picker").style.display = picking ? "block" : "none";
@@ -271,7 +284,8 @@ function initCompoControls() {
     // Ouverture synchrone (au clic) pour éviter que le navigateur bloque
     // la fenêtre une fois l'export (asynchrone) terminé.
     const shareWindow = window.open("", "_blank");
-    shareElement(document.getElementById("pitch-wrap"), `compo-${state.compo.activeClub}.png`, shareWindow);
+    renderShareCard();
+    shareElement(document.getElementById("share-card"), `compo-${state.compo.activeClub}.png`, shareWindow);
   });
   document.getElementById("change-club-btn").addEventListener("click", () => {
     state.compo.step = "pick";
