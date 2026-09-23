@@ -522,7 +522,14 @@ footer.credit {
   background-repeat: repeat;
 }
 .share-card-header { display: flex; align-items: center; gap: 12px; }
-.share-card-logo { height: 36px; width: auto; object-fit: contain; }
+.share-card-logo {
+  height: 36px;
+  width: 115px;
+  background-image: url("../assets/logos/competitions/ligue1-mcdonalds.png");
+  background-size: contain;
+  background-position: left center;
+  background-repeat: no-repeat;
+}
 .share-card-wordmark {
   font-family: var(--font-display);
   font-weight: 700;
@@ -534,13 +541,16 @@ footer.credit {
 
 .share-card-club { display: flex; align-items: center; gap: 18px; }
 .share-card-crest {
-  width: 76px;
-  height: 76px;
+  width: 84px;
+  height: 84px;
   border-radius: 50%;
-  background: #fff;
-  padding: 8px;
-  object-fit: contain;
   flex-shrink: 0;
+  background-color: #fbfbfb;
+  background-size: 60%, cover;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+  border: 3px solid var(--pink);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
 }
 .share-card-club-info { min-width: 0; }
 .share-card-club-name {

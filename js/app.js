@@ -247,8 +247,9 @@ function renderActiveClubHeaders() {
 function renderShareCard() {
   const club = getClub(state.compo.activeClub);
   const compo = currentCompo();
-  document.getElementById("share-card-crest").src = club.logo;
-  document.getElementById("share-card-crest").alt = club.name;
+  const crest = document.getElementById("share-card-crest");
+  crest.style.backgroundImage = `url("${club.logo}"), radial-gradient(circle at 32% 28%, #ffffff, #e7e7e7 78%)`;
+  crest.style.borderColor = club.color;
   document.getElementById("share-card-club-name").textContent = club.name;
   document.getElementById("share-card-formation").textContent = FORMATIONS[compo.formation].label;
   buildPitchSlots(document.getElementById("share-card-pitch"), compo, avatarColor(), { interactive: false });
