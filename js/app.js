@@ -103,6 +103,8 @@ function initTabs() {
       state.activeTab = btn.dataset.tab;
       document.querySelectorAll("nav.tabs button").forEach((b) => b.classList.toggle("active", b === btn));
       document.querySelectorAll(".view").forEach((v) => v.classList.toggle("active", v.id === "view-" + btn.dataset.tab));
+      if (btn.dataset.tab === "compo") syncRosterHeight("club");
+      if (btn.dataset.tab === "groupe" && state.groupe.subTab === "onze") syncRosterHeight("france");
     });
   });
 }
@@ -344,6 +346,26 @@ function pitchElId(context) {
 function rosterElId(context) {
   return context === "france" ? "france-roster-list" : "roster-list";
 }
+function pitchWrapElId(context) {
+  return context === "france" ? "france-pitch-wrap" : "pitch-wrap";
+}
+
+const DESKTOP_LAYOUT_QUERY = window.matchMedia("(min-width: 901px)");
+
+function syncRosterHeight(context) {
+  const roster = document.getElementById(rosterElId(context));
+  const pitchWrap = document.getElementById(pitchWrapElId(context));
+  if (!roster || !pitchWrap) return;
+  if (DESKTOP_LAYOUT_QUERY.matches) {
+    const height = pitchWrap.getBoundingClientRect().height;
+    if (height <= 0) return; // pitch pas encore visible/rendu (ex: onglet caché) : on ne casse pas la hauteur déjà en place
+    roster.style.maxHeight = height + "px";
+    roster.style.overflowY = "auto";
+  } else {
+    roster.style.maxHeight = "";
+    roster.style.overflowY = "";
+  }
+}
 function franceRoster() {
   return Array.from(state.groupe.selectedIds).map(playerById).filter(Boolean);
 }
@@ -424,6 +446,7 @@ function renderCompoView() {
   renderFormationSelect();
   renderPitch("club");
   renderRoster("club");
+  syncRosterHeight("club");
 }
 
 function initCompoControls() {
@@ -459,6 +482,7 @@ function renderFranceOnzeView() {
 
   renderPitch("france");
   renderRoster("france");
+  syncRosterHeight("france");
 }
 
 function initFranceCompoControls() {
@@ -647,6 +671,15 @@ function init() {
   if (state.groupe.subTab === "onze") {
     document.querySelector('nav.sub-tabs button[data-subtab="onze"]').click();
   }
+
+  let resizeTimer = null;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      syncRosterHeight("club");
+      syncRosterHeight("france");
+    }, 120);
+  });
 }
 
 document.addEventListener("DOMContentLoaded", init);
