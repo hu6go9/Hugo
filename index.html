@@ -16,121 +16,12 @@
       <small>Prototype — données fictives</small>
     </span>
   </div>
-  <nav class="tabs">
-    <button class="active" data-tab="groupe">Équipe de France</button>
-    <button data-tab="compo">Ligue 1 McDonald's</button>
-  </nav>
   <div class="save-indicator" id="save-indicator"><span class="dot"></span> Sauvegarde locale auto</div>
 </header>
 
 <main>
 
-  <!-- ===================== VUE 1 : ÉQUIPE DE FRANCE ===================== -->
-  <section id="view-groupe" class="view active">
-    <!-- --- Étape 0 : que veux-tu faire ? --- -->
-    <div class="landing" id="groupe-landing">
-      <div class="landing-header">
-        <h2>Équipe de France</h2>
-        <p>Compose ton groupe, puis pose ton onze de départ.</p>
-      </div>
-      <div class="landing-grid">
-        <button type="button" class="landing-card" id="landing-pool-btn">
-          <span class="landing-card-title">Composer mon groupe</span>
-          <span class="landing-card-sub" id="landing-pool-sub">0 / 26 joueurs sélectionnés</span>
-        </button>
-        <button type="button" class="landing-card" id="landing-onze-btn">
-          <span class="landing-card-title">Poser mon onze de départ</span>
-          <span class="landing-card-sub" id="landing-onze-sub">à partir de ton groupe</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- --- Étape 1 : groupe / onze --- -->
-    <div id="groupe-workspace" style="display:none;">
-      <div class="workspace-head-row">
-        <button class="btn btn-ghost" id="groupe-back-btn" type="button">‹ Retour</button>
-      </div>
-      <nav class="sub-tabs">
-        <button class="active" data-subtab="pool">Groupe</button>
-        <button data-subtab="onze">Onze de départ</button>
-      </nav>
-
-      <!-- --- Sous-vue : sélection du groupe --- -->
-      <div class="subview active" id="subview-pool">
-      <div class="panel" style="margin-bottom:16px;">
-        <div class="toolbar">
-          <select id="groupe-size">
-            <option value="23">Groupe de 23</option>
-            <option value="26">Groupe de 26</option>
-          </select>
-          <input type="search" id="groupe-search" placeholder="Rechercher un joueur..." style="min-width:220px;" />
-          <div class="spacer"></div>
-          <button class="btn btn-ghost" id="groupe-reset">Réinitialiser</button>
-        </div>
-
-        <div class="quota-row" id="quota-row"></div>
-
-        <div class="step-nav">
-          <button class="btn btn-ghost step-nav-btn" id="step-prev" type="button">‹ Précédent</button>
-          <div class="step-info">
-            <span class="step-index" id="step-index">Étape 1/4</span>
-            <span class="step-label" id="step-label">Gardiens</span>
-          </div>
-          <button class="btn btn-primary step-nav-btn" id="step-next" type="button">Suivant ›</button>
-        </div>
-
-        <div class="grid-players" id="groupe-grid"></div>
-      </div>
-
-      <div class="panel selected-summary" id="groupe-summary-panel">
-        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px;">
-          <h3 style="margin:0;">Groupe sélectionné</h3>
-          <span id="groupe-total" class="pos-tag" style="background:var(--accent);color:white;"></span>
-          <div class="spacer"></div>
-          <button class="btn btn-primary" id="groupe-share">Partager</button>
-        </div>
-        <div id="groupe-summary"></div>
-      </div>
-
-      <div class="progress-float" id="groupe-progress-float">
-        <div class="progress-float-total">
-          <span class="value" id="progress-float-value">0/26</span>
-          <span class="sub" id="progress-float-sub">joueurs restants</span>
-        </div>
-        <div class="progress-float-cats" id="progress-float-cats"></div>
-        <button class="progress-float-btn" id="progress-float-btn" type="button">Voir la sélection</button>
-      </div>
-    </div>
-
-    <!-- --- Sous-vue : onze de départ (à partir du groupe) --- -->
-    <div class="subview" id="subview-onze">
-      <div class="empty-state" id="france-empty-state">
-        Compose d'abord ton groupe dans l'onglet <strong>Groupe</strong> ci-dessus avant de poser ton onze de départ.
-      </div>
-      <div class="compo-layout" id="france-compo-layout" style="display:none;">
-        <div class="panel">
-          <div class="roster-cat-label" style="margin-top:0;">Groupe sélectionné</div>
-          <div class="roster-list" id="france-roster-list"></div>
-        </div>
-
-        <div class="pitch-wrap" id="france-pitch-wrap">
-          <div class="formation-bar">
-            <select id="france-formation-select"></select>
-            <div class="spacer"></div>
-            <button class="btn btn-ghost" id="france-compo-reset">Réinitialiser</button>
-            <button class="btn btn-primary" id="france-compo-share">Partager</button>
-          </div>
-          <div class="pitch" id="france-pitch">
-            <div class="center-circle"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    </div>
-  </section>
-
-  <!-- ===================== VUE 2 : COMPO CLUB ===================== -->
-  <section id="view-compo" class="view">
+  <section id="view-compo">
     <!-- --- Étape 1 : choix du club --- -->
     <div class="landing" id="club-picker">
       <div class="landing-header">
