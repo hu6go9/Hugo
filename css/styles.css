@@ -99,6 +99,8 @@
   --pink: #ff7fde;
   --pitch: #085fff;
   --pitch-line: rgba(255, 255, 255, 0.6);
+  --pattern-dark: url("../assets/brand/patterns/pattern-dark-on-black.webp");
+  --pattern-mid: url("../assets/brand/patterns/pattern-mid-on-black.webp");
   --radius: 14px;
   --radius-sm: 8px;
   --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
@@ -431,7 +433,7 @@ select:focus { border-color: var(--accent); }
   aspect-ratio: 2 / 3;
   container-type: inline-size;
   background-color: var(--pitch);
-  background-image: url("../assets/brand/patterns/pattern-mid-on-black.webp"),
+  background-image: var(--pattern-mid),
     repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 10%, rgba(0, 0, 0, 0.05) 10%, rgba(0, 0, 0, 0.05) 20%);
   background-size: 260px auto, auto;
   background-repeat: repeat, repeat;
@@ -579,18 +581,30 @@ footer.credit {
   flex-direction: column;
   gap: 22px;
   background-color: var(--charbon);
-  background-image: url("../assets/brand/patterns/pattern-dark-on-black.webp");
+  background-image: var(--pattern-dark);
   background-size: 220px auto;
   background-repeat: repeat;
 }
 .share-card-header { display: flex; align-items: center; gap: 12px; }
 .share-card-logo {
+  /* Taille par défaut pensée pour un lockup horizontal (ex: Ligue 1
+     McDonald's) ; surchargée en JS pour les compétitions au logo empilé
+     verticalement (ex: Ligue 2 BKT), voir applyCompetitionLogoBox(). */
   height: 36px;
   width: 115px;
   background-image: url("../assets/logos/competitions/ligue1-mcdonalds.png");
   background-size: contain;
   background-position: left center;
   background-repeat: no-repeat;
+  box-sizing: border-box;
+}
+/* Plaque blanche pour les logos à encre foncée (ex: Ligue 2 BKT), illisibles
+   tels quels sur le fond sombre de la carte de partage. */
+.share-card-logo.share-card-logo--plate {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 4px;
+  background-position: center center;
 }
 .share-card-wordmark {
   font-family: var(--font-display);
