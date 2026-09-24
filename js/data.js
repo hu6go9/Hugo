@@ -51,6 +51,8 @@ const CLUBS_L2 = [
   { id: "redstar", name: "Red Star FC", short: "RSFC", color: "#004030", accent: "#A00010", logo: LOGO_BASE_L2 + "red-star.png" },
   { id: "reims", name: "Stade de Reims", short: "SDR", color: "#F00000", accent: "#FFFFFF", logo: LOGO_BASE_L2 + "reims.png" },
   { id: "rodez", name: "Rodez Aveyron Football", short: "RAF", color: "#D00020", accent: "#F0B000", logo: LOGO_BASE_L2 + "rodez.png" },
+  { id: "asse", name: "AS Saint-Étienne", short: "ASSE", color: "#009050", accent: "#FFFFFF", logo: LOGO_BASE_L2 + "saint-etienne.png" },
+  { id: "sochaux", name: "FC Sochaux-Montbéliard", short: "FCSM", color: "#003080", accent: "#F0C000", logo: LOGO_BASE_L2 + "sochaux.png" },
 ];
 
 const COMPETITIONS = {
@@ -65,7 +67,7 @@ const COMPETITIONS = {
     id: "l2",
     name: "Ligue 2 BKT",
     short: "Ligue 2",
-    logo: "assets/logos/competitions/ligue2-bkt.png", // logo à venir
+    logo: "assets/logos/competitions/ligue2-bkt.png",
     clubs: CLUBS_L2,
   },
 };
