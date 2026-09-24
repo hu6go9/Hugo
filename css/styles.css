@@ -372,16 +372,46 @@ select:focus { border-color: var(--accent); }
 @media (prefers-reduced-motion: reduce) {
   .club-picker-card.picked { animation: none; }
 }
-.club-picker-card .club-logo {
+.club-picker-card .club-logo-wrap {
+  position: relative;
   width: 56px;
   height: 56px;
+  flex-shrink: 0;
+}
+.club-picker-card .club-logo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   background: #fff;
   border-radius: 50%;
   /* Assez de marge pour que le blason tienne entier dans le cercle : un
      carré ne s'inscrit sans rognage que jusqu'à ~70,7% du diamètre. */
   padding: 11px;
-  flex-shrink: 0;
+}
+/* Chargement circulaire premium entre le clic sur un club et le passage
+   à son effectif — l'interaction n'est plus un switch instantané. */
+.club-picker-card .card-loader {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.18);
+  border-top-color: var(--pick-color, var(--pink));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+.club-picker-card.loading .club-logo { opacity: 0.2; transition: opacity 0.15s ease; }
+.club-picker-card.loading .card-loader {
+  opacity: 1;
+  animation: cardSpin 0.7s linear infinite;
+}
+@keyframes cardSpin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .club-picker-card.loading .card-loader { animation: none; }
 }
 .club-picker-card .club-name { font-weight: 700; font-size: 0.82rem; line-height: 1.25; }
 

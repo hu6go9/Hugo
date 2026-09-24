@@ -124,21 +124,34 @@ function renderClubPicker() {
   const wrap = document.getElementById("club-picker-grid");
   wrap.innerHTML = "";
   const hasChosen = Object.keys(state.compo.byClub).length > 0;
+  let picking = false;
   COMPETITIONS[state.compo.competition].clubs.forEach((club) => {
     const card = document.createElement("button");
     card.type = "button";
     card.className = "club-picker-card" + (hasChosen && club.id === state.compo.activeClub ? " current" : "");
-    card.innerHTML = `<img class="club-logo" src="${club.logo}" alt="${club.name}" /><span class="club-name">${club.name}</span>`;
+    card.innerHTML = `
+      <div class="club-logo-wrap">
+        <img class="club-logo" src="${club.logo}" alt="${club.name}" />
+        <span class="card-loader" aria-hidden="true"></span>
+      </div>
+      <span class="club-name">${club.name}</span>
+    `;
     card.addEventListener("click", () => {
-      // Petit "pop" de confirmation dans la couleur du club avant de
-      // basculer sur l'effectif — léger retour visuel sur le choix.
+      if (picking) return;
+      picking = true;
+      // Petit "pop" de confirmation dans la couleur du club, puis un
+      // court chargement circulaire avant de basculer sur l'effectif —
+      // habillage volontairement "premium" plutôt qu'un simple switch instantané.
       card.style.setProperty("--pick-color", club.color);
       card.classList.add("picked");
       setTimeout(() => {
-        state.compo.activeClub = club.id;
-        state.compo.step = "squad";
-        scheduleSave();
-        renderCompoView();
+        card.classList.add("loading");
+        setTimeout(() => {
+          state.compo.activeClub = club.id;
+          state.compo.step = "squad";
+          scheduleSave();
+          renderCompoView();
+        }, 550);
       }, 200);
     });
     wrap.appendChild(card);
