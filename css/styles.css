@@ -405,7 +405,9 @@ select:focus { border-color: var(--accent); }
 .club-picker-card.loading .club-logo { opacity: 0.2; transition: opacity 0.15s ease; }
 .club-picker-card.loading .card-loader {
   opacity: 1;
-  animation: cardSpin 0.7s linear infinite;
+  /* Un seul tour, pas une boucle infinie : un clin d'œil volontaire,
+     pas un vrai temps de chargement à faire patienter. */
+  animation: cardSpin 0.55s cubic-bezier(0.3, 0, 0.2, 1) 1;
 }
 @keyframes cardSpin {
   to { transform: rotate(360deg); }
