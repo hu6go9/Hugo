@@ -66,6 +66,9 @@ const CLUBS_L3 = [
   { id: "bourg-peronnas", name: "Football Bourg-en-Bresse Péronnas 01", short: "FBBP01", color: "#003D8F", accent: "#E6007E", logo: LOGO_BASE_L3 + "fbbp01.png" },
   { id: "bastia", name: "SC Bastia", short: "SCB", color: "#0047BB", accent: "#FFFFFF", logo: LOGO_BASE_L3 + "sc-bastia.png" },
   { id: "concarneau", name: "US Concarneau", short: "USC", color: "#0055A4", accent: "#E1000F", logo: LOGO_BASE_L3 + "us-concarneau.png" },
+  { id: "fleury", name: "Fleury Essonne", short: "FLEURY", color: "#1A1A1A", accent: "#E30613", logo: LOGO_BASE_L3 + "fleury-essonne.png" },
+  { id: "vendee", name: "Vendée Foot Club", short: "VFC", color: "#E30613", accent: "#FFFFFF", logo: LOGO_BASE_L3 + "vendee-fc.png" },
+  { id: "lepuy", name: "Le Puy en Velay Football Club", short: "LE PUY", color: "#0A2A4D", accent: "#4FB6E8", logo: LOGO_BASE_L3 + "le-puy.png" },
 ];
 
 const COMPETITIONS = {
