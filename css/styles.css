@@ -297,23 +297,23 @@ select:focus { border-color: var(--accent); }
 
 .landing-back-row { max-width: 980px; margin: 0 auto 14px; }
 
-/* ---- Étape 0 : choix de la compétition ---- */
+/* ---- Étape 0 : choix de la compétition (même style de carte que le
+   choix du club, juste en dessous) ---- */
 .competition-picker-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  max-width: 640px;
-  margin: 0 auto;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 160px));
+  justify-content: center;
+  gap: 12px;
 }
 .competition-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
   background: var(--bg-card);
   border: 2px solid var(--border);
   border-radius: var(--radius);
-  padding: 32px 20px;
+  padding: 18px 10px;
   cursor: pointer;
   text-align: center;
   font-family: inherit;
@@ -322,19 +322,20 @@ select:focus { border-color: var(--accent); }
 }
 .competition-card:hover { border-color: var(--accent); transform: translateY(-2px); }
 .competition-card.current { border-color: var(--pink); }
+.competition-card.picked {
+  animation: cardPick 0.3s ease;
+  border-color: var(--pick-color, var(--pink));
+}
+@media (prefers-reduced-motion: reduce) {
+  .competition-card.picked { animation: none; }
+}
 .competition-card .competition-logo {
-  height: 64px;
+  height: 48px;
   width: auto;
   max-width: 100%;
   object-fit: contain;
 }
-.competition-card .competition-name {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.05rem;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
+.competition-card .competition-name { font-weight: 700; font-size: 0.82rem; line-height: 1.25; }
 
 /* ---- Étape 1 : choix du club ---- */
 .club-picker-grid {

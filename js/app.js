@@ -108,10 +108,13 @@ function renderCompetitionPicker() {
     card.className = "competition-card" + (comp.id === state.compo.competition ? " current" : "");
     card.innerHTML = `<img class="competition-logo" src="${comp.logo}" alt="${comp.name}" onerror="this.style.display='none'" /><span class="competition-name">${comp.name}</span>`;
     card.addEventListener("click", () => {
-      state.compo.competition = comp.id;
-      state.compo.step = "pick";
-      scheduleSave();
-      renderCompoView();
+      card.classList.add("picked");
+      setTimeout(() => {
+        state.compo.competition = comp.id;
+        state.compo.step = "pick";
+        scheduleSave();
+        renderCompoView();
+      }, 200);
     });
     wrap.appendChild(card);
   });
