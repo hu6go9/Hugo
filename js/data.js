@@ -47,6 +47,10 @@ const CLUBS_L2 = [
   { id: "montpellier", name: "Montpellier HSC", short: "MHSC", color: "#202050", accent: "#F06000", logo: LOGO_BASE_L2 + "montpellier.png" },
   { id: "nancy", name: "AS Nancy Lorraine", short: "ASNL", color: "#F00000", accent: "#FFFFFF", logo: LOGO_BASE_L2 + "nancy.png" },
   { id: "nantes", name: "FC Nantes", short: "FCN", color: "#F0D000", accent: "#00A040", logo: LOGO_BASE_L2 + "nantes.png" },
+  { id: "pau", name: "Pau FC", short: "PAU", color: "#202030", accent: "#F0C000", logo: LOGO_BASE_L2 + "pau.png" },
+  { id: "redstar", name: "Red Star FC", short: "RSFC", color: "#004030", accent: "#A00010", logo: LOGO_BASE_L2 + "red-star.png" },
+  { id: "reims", name: "Stade de Reims", short: "SDR", color: "#F00000", accent: "#FFFFFF", logo: LOGO_BASE_L2 + "reims.png" },
+  { id: "rodez", name: "Rodez Aveyron Football", short: "RAF", color: "#D00020", accent: "#F0B000", logo: LOGO_BASE_L2 + "rodez.png" },
 ];
 
 const COMPETITIONS = {
