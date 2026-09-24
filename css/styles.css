@@ -378,7 +378,9 @@ select:focus { border-color: var(--accent); }
   object-fit: contain;
   background: #fff;
   border-radius: 50%;
-  padding: 6px;
+  /* Assez de marge pour que le blason tienne entier dans le cercle : un
+     carré ne s'inscrit sans rognage que jusqu'à ~70,7% du diamètre. */
+  padding: 11px;
   flex-shrink: 0;
 }
 .club-picker-card .club-name { font-weight: 700; font-size: 0.82rem; line-height: 1.25; }
@@ -397,7 +399,7 @@ select:focus { border-color: var(--accent); }
   object-fit: contain;
   background: #fff;
   border-radius: 50%;
-  padding: 3px;
+  padding: 6px;
   flex-shrink: 0;
 }
 #pitch-club-header { margin-bottom: 0; margin-right: auto; }
