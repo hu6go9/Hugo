@@ -261,9 +261,11 @@ function renderRoster() {
   });
 }
 
-// Personnalise l'espace de travail aux couleurs du club choisi (terrain,
-// bouton principal, focus...) — scoppé à l'élément donné pour ne pas déteindre
-// sur l'écran de choix du club.
+// Personnalise aux couleurs du club ce qui est propre au club (bouton
+// principal, focus, avatars joueurs via avatarColor()...) — scoppé à
+// l'élément donné pour ne pas déteindre sur l'écran de choix du club.
+// Le terrain lui-même reste volontairement à couleur fixe (--pitch,
+// définie une fois pour toutes dans :root), il n'est pas personnalisé.
 // Luminance relative (WCAG) pour choisir un texte blanc ou charbon lisible
 // par-dessus la couleur du club (ex: le jaune de Nantes a besoin de texte foncé).
 function relativeLuminance(hex) {
@@ -274,7 +276,6 @@ function relativeLuminance(hex) {
 
 function applyClubTheme(club, el) {
   el.style.setProperty("--accent", club.color);
-  el.style.setProperty("--pitch", club.color);
   el.style.setProperty("--accent-contrast", relativeLuminance(club.color) > 0.45 ? "#1a1a1a" : "#ffffff");
 }
 
