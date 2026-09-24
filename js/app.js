@@ -279,24 +279,12 @@ function applyClubTheme(club, el) {
   el.style.setProperty("--accent-contrast", relativeLuminance(club.color) > 0.45 ? "#1a1a1a" : "#ffffff");
 }
 
-// Habillage du motif de fond ("1"/"2" LFP) selon la compétition active —
-// scoppé à l'élément donné comme applyClubTheme, cascade par héritage CSS.
-function applyCompetitionPattern(competitionId, el) {
-  // Les url() d'une custom property se résolvent par rapport à la feuille de
-  // style qui la consomme (css/styles.css), pas par rapport à la page.
-  const suffix = competitionId === "l2" ? "-l2" : "";
-  el.style.setProperty("--pattern-dark", `url("../assets/brand/patterns/pattern-dark-on-black${suffix}.webp")`);
-  el.style.setProperty("--pattern-mid", `url("../assets/brand/patterns/pattern-mid-on-black${suffix}.webp")`);
-}
-
 function renderActiveClubHeaders() {
   const club = getClub(state.compo.activeClub);
   const html = `<img src="${club.logo}" alt="${club.name}" /><span>${club.name}</span>`;
   document.getElementById("roster-club-header").innerHTML = html;
   document.getElementById("pitch-club-header").innerHTML = html;
-  const layout = document.getElementById("compo-layout");
-  applyClubTheme(club, layout);
-  applyCompetitionPattern(state.compo.competition, layout);
+  applyClubTheme(club, document.getElementById("compo-layout"));
 }
 
 // Construit une image de partage dédiée (pas une capture de l'UI en direct) :
@@ -307,7 +295,6 @@ function renderShareCard() {
   const competition = COMPETITIONS[state.compo.competition];
   const card = document.getElementById("share-card");
   applyClubTheme(club, card);
-  applyCompetitionPattern(state.compo.competition, card);
   const crest = document.getElementById("share-card-crest");
   crest.style.backgroundImage = `url("${club.logo}"), radial-gradient(circle at 32% 28%, #ffffff, #e7e7e7 78%)`;
   crest.style.borderColor = club.color;

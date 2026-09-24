@@ -99,8 +99,6 @@
   --pink: #ff7fde;
   --pitch: #085fff;
   --pitch-line: rgba(255, 255, 255, 0.6);
-  --pattern-dark: url("../assets/brand/patterns/pattern-dark-on-black.webp");
-  --pattern-mid: url("../assets/brand/patterns/pattern-mid-on-black.webp");
   --radius: 14px;
   --radius-sm: 8px;
   --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
@@ -433,11 +431,8 @@ select:focus { border-color: var(--accent); }
   aspect-ratio: 2 / 3;
   container-type: inline-size;
   background-color: var(--pitch);
-  background-image: var(--pattern-mid),
-    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 10%, rgba(0, 0, 0, 0.05) 10%, rgba(0, 0, 0, 0.05) 20%);
-  background-size: 260px auto, auto;
-  background-repeat: repeat, repeat;
-  background-blend-mode: soft-light, normal;
+  background-image: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 10%, rgba(0, 0, 0, 0.05) 10%, rgba(0, 0, 0, 0.05) 20%);
+  background-repeat: repeat;
   border-radius: 10px;
   border: 3px solid var(--pitch-line);
   overflow: hidden;
@@ -581,9 +576,6 @@ footer.credit {
   flex-direction: column;
   gap: 22px;
   background-color: var(--charbon);
-  background-image: var(--pattern-dark);
-  background-size: 220px auto;
-  background-repeat: repeat;
 }
 .share-card-header { display: flex; align-items: center; gap: 12px; }
 .share-card-logo {
