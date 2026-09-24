@@ -74,6 +74,9 @@ const CLUBS_L3 = [
   { id: "qrm", name: "Quevilly Rouen Métropole", short: "QRM", color: "#E30613", accent: "#F5A623", logo: LOGO_BASE_L3 + "qrm.png" },
   { id: "rouen", name: "FC Rouen 1899", short: "FCR", color: "#CE1126", accent: "#0A1F44", logo: LOGO_BASE_L3 + "fc-rouen.png" },
   { id: "thionville", name: "US Thionville Lusitanos", short: "USTL", color: "#1A1A1A", accent: "#C9A227", logo: LOGO_BASE_L3 + "thionville.png" },
+  { id: "valenciennes", name: "Valenciennes FC", short: "VAFC", color: "#E30613", accent: "#FFFFFF", logo: LOGO_BASE_L3 + "valenciennes.png" },
+  { id: "versailles", name: "Versailles FC", short: "VERSAILLES", color: "#0A3D91", accent: "#C9A227", logo: LOGO_BASE_L3 + "versailles.png" },
+  { id: "villefranche", name: "FC Villefranche Beaujolais", short: "FCVB", color: "#0066B3", accent: "#FFFFFF", logo: LOGO_BASE_L3 + "villefranche.png" },
 ];
 
 const COMPETITIONS = {
