@@ -390,30 +390,44 @@ select:focus { border-color: var(--accent); }
      carré ne s'inscrit sans rognage que jusqu'à ~70,7% du diamètre. */
   padding: 11px;
 }
-/* Chargement circulaire premium entre le clic sur un club et le passage
-   à son effectif — l'interaction n'est plus un switch instantané. */
+/* Confirmation de sélection : une petite lumière parcourt une fois le
+   tour du blason (le logo, lui, reste net — ce n'est pas un chargement). */
 .club-picker-card .card-loader {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+}
+.club-picker-card .card-loader::before {
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.18);
-  border-top-color: var(--pick-color, var(--pink));
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s ease;
+  border: 2px solid var(--pick-color, var(--pink));
+  opacity: 0.22;
 }
-.club-picker-card.loading .club-logo { opacity: 0.2; transition: opacity 0.15s ease; }
-.club-picker-card.loading .card-loader {
-  opacity: 1;
-  /* Un seul tour, pas une boucle infinie : un clin d'œil volontaire,
-     pas un vrai temps de chargement à faire patienter. */
-  animation: cardSpin 0.55s cubic-bezier(0.3, 0, 0.2, 1) 1;
+.club-picker-card .card-loader::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0deg, transparent 325deg, var(--pick-color, var(--pink)) 325deg, var(--pick-color, var(--pink)) 360deg, transparent 360deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  filter: drop-shadow(0 0 3px var(--pick-color, var(--pink)));
 }
-@keyframes cardSpin {
-  to { transform: rotate(360deg); }
+.club-picker-card.loading .card-loader { opacity: 1; }
+.club-picker-card.loading .card-loader::after {
+  animation: cardLightSweep 0.5s ease-in-out 1;
+}
+@keyframes cardLightSweep {
+  0% { transform: rotate(0deg); opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: rotate(360deg); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .club-picker-card.loading .card-loader { animation: none; }
+  .club-picker-card.loading .card-loader::after { animation: none; opacity: 0; }
 }
 .club-picker-card .club-name { font-weight: 700; font-size: 0.82rem; line-height: 1.25; }
 
