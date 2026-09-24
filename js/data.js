@@ -69,6 +69,11 @@ const CLUBS_L3 = [
   { id: "fleury", name: "Fleury Essonne", short: "FLEURY", color: "#1A1A1A", accent: "#E30613", logo: LOGO_BASE_L3 + "fleury-essonne.png" },
   { id: "vendee", name: "Vendée Foot Club", short: "VFC", color: "#E30613", accent: "#FFFFFF", logo: LOGO_BASE_L3 + "vendee-fc.png" },
   { id: "lepuy", name: "Le Puy en Velay Football Club", short: "LE PUY", color: "#0A2A4D", accent: "#4FB6E8", logo: LOGO_BASE_L3 + "le-puy.png" },
+  { id: "orleans", name: "US Orléans", short: "USO", color: "#FFD500", accent: "#E30613", logo: LOGO_BASE_L3 + "orleans.png" },
+  { id: "paris-atletico", name: "Paris Atletico", short: "PARIS", color: "#101010", accent: "#39E639", logo: LOGO_BASE_L3 + "paris-atletico.png" },
+  { id: "qrm", name: "Quevilly Rouen Métropole", short: "QRM", color: "#E30613", accent: "#F5A623", logo: LOGO_BASE_L3 + "qrm.png" },
+  { id: "rouen", name: "FC Rouen 1899", short: "FCR", color: "#CE1126", accent: "#0A1F44", logo: LOGO_BASE_L3 + "fc-rouen.png" },
+  { id: "thionville", name: "US Thionville Lusitanos", short: "USTL", color: "#1A1A1A", accent: "#C9A227", logo: LOGO_BASE_L3 + "thionville.png" },
 ];
 
 const COMPETITIONS = {
