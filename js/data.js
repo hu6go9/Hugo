@@ -39,6 +39,9 @@ const CLUBS_L2 = [
   { id: "usbco", name: "US Boulogne Côte d'Opale", short: "USBCO", color: "#E00000", accent: "#101010", logo: LOGO_BASE_L2 + "us-boulogne.png" },
   { id: "clermont", name: "Clermont Foot 63", short: "CF63", color: "#002060", accent: "#D00030", logo: LOGO_BASE_L2 + "clermont-foot.png" },
   { id: "dijon", name: "Dijon FCO", short: "DFCO", color: "#E00010", accent: "#FFFFFF", logo: LOGO_BASE_L2 + "dijon-fco.png" },
+  { id: "dunkerque", name: "USL Dunkerque", short: "USLD", color: "#102030", accent: "#E0B070", logo: LOGO_BASE_L2 + "dunkerque.png" },
+  { id: "grenoble", name: "Grenoble Foot 38", short: "GF38", color: "#004090", accent: "#FFFFFF", logo: LOGO_BASE_L2 + "grenoble-foot.png" },
+  { id: "guingamp", name: "En Avant Guingamp", short: "EAG", color: "#F00000", accent: "#000000", logo: LOGO_BASE_L2 + "guingamp.png" },
 ];
 
 const COMPETITIONS = {
