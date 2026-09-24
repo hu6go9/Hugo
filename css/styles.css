@@ -390,44 +390,58 @@ select:focus { border-color: var(--accent); }
      carré ne s'inscrit sans rognage que jusqu'à ~70,7% du diamètre. */
   padding: 11px;
 }
-/* Confirmation de sélection : une petite lumière parcourt une fois le
-   tour du blason (le logo, lui, reste net — ce n'est pas un chargement). */
+/* Confirmation de sélection façon étoile filante : une tête lumineuse
+   nette avec une traînée qui s'estompe derrière elle, un seul tour du
+   blason (qui lui reste net — ce n'est pas un chargement). */
 .club-picker-card .card-loader {
   position: absolute;
-  inset: -3px;
+  inset: -4px;
   border-radius: 50%;
   pointer-events: none;
   opacity: 0;
 }
 .club-picker-card .card-loader::before {
+  /* traînée : dégradé conique qui s'estompe progressivement, pas un
+     segment plein aux bords francs. */
   content: "";
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 2px solid var(--pick-color, var(--pink));
-  opacity: 0.22;
-}
-.club-picker-card .card-loader::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: conic-gradient(from 0deg, transparent 0deg, transparent 325deg, var(--pick-color, var(--pink)) 325deg, var(--pick-color, var(--pink)) 360deg, transparent 360deg);
+  background: conic-gradient(from 0deg,
+    transparent 0deg,
+    transparent 255deg,
+    color-mix(in srgb, var(--pick-color, var(--pink)) 12%, transparent) 300deg,
+    color-mix(in srgb, var(--pick-color, var(--pink)) 55%, transparent) 335deg,
+    var(--pick-color, var(--pink)) 358deg,
+    transparent 360deg
+  );
   -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
   mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
-  filter: drop-shadow(0 0 3px var(--pick-color, var(--pink)));
 }
-.club-picker-card.loading .card-loader { opacity: 1; }
-.club-picker-card.loading .card-loader::after {
-  animation: cardLightSweep 0.5s ease-in-out 1;
+.club-picker-card .card-loader::after {
+  /* tête : le point lumineux qui mène la traînée */
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px 2px var(--pick-color, var(--pink)), 0 0 2px 1px #fff;
 }
-@keyframes cardLightSweep {
+.club-picker-card.loading .card-loader {
+  opacity: 1;
+  animation: cardShootingStar 0.6s ease-in 1;
+}
+@keyframes cardShootingStar {
   0% { transform: rotate(0deg); opacity: 1; }
-  85% { opacity: 1; }
+  80% { opacity: 1; }
   100% { transform: rotate(360deg); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .club-picker-card.loading .card-loader::after { animation: none; opacity: 0; }
+  .club-picker-card.loading .card-loader { animation: none; opacity: 0; }
 }
 .club-picker-card .club-name { font-weight: 700; font-size: 0.82rem; line-height: 1.25; }
 

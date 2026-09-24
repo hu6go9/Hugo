@@ -151,7 +151,7 @@ function renderClubPicker() {
           state.compo.step = "squad";
           scheduleSave();
           renderCompoView();
-        }, 500);
+        }, 600);
       }, 200);
     });
     wrap.appendChild(card);
