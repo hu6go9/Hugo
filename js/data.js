@@ -8,6 +8,7 @@
 
 const LOGO_BASE = "assets/logos/clubs/";
 const LOGO_BASE_L2 = "assets/logos/clubs-l2/";
+const LOGO_BASE_L3 = "assets/logos/clubs-l3/";
 
 // Couleurs officielles RVB issues de la "Charte Clubs L1 2025-2026" fournie par Hugo,
 // sauf ESTAC et Le Mans FC (absents de ce document) qui gardent les couleurs extraites des logos.
@@ -55,6 +56,18 @@ const CLUBS_L2 = [
   { id: "sochaux", name: "FC Sochaux-Montbéliard", short: "FCSM", color: "#003080", accent: "#F0C000", logo: LOGO_BASE_L2 + "sochaux.png" },
 ];
 
+// Couleurs extraites automatiquement des blasons envoyés par Hugo (pas de charte
+// officielle disponible pour la Ligue 3). Liste à compléter au fil des logos reçus
+// — deux blasons du premier lot (un bouclier marine "SCAAB" et un casque à cornes
+// sans texte) restent en attente, le nom du club n'ayant pas encore été confirmé.
+const CLUBS_L3 = [
+  { id: "amiens", name: "Amiens SC", short: "AMIENS", color: "#101010", accent: "#FFFFFF", logo: LOGO_BASE_L3 + "amiens-sc.png" },
+  { id: "cannes", name: "AS Cannes", short: "CANNES", color: "#C00000", accent: "#FFFFFF", logo: LOGO_BASE_L3 + "as-cannes.png" },
+  { id: "bourg-peronnas", name: "Football Bourg-en-Bresse Péronnas 01", short: "FBBP01", color: "#003D8F", accent: "#E6007E", logo: LOGO_BASE_L3 + "fbbp01.png" },
+  { id: "bastia", name: "SC Bastia", short: "SCB", color: "#0047BB", accent: "#FFFFFF", logo: LOGO_BASE_L3 + "sc-bastia.png" },
+  { id: "concarneau", name: "US Concarneau", short: "USC", color: "#0055A4", accent: "#E1000F", logo: LOGO_BASE_L3 + "us-concarneau.png" },
+];
+
 const COMPETITIONS = {
   l1: {
     id: "l1",
@@ -70,9 +83,16 @@ const COMPETITIONS = {
     logo: "assets/logos/competitions/ligue2-bkt.png",
     clubs: CLUBS_L2,
   },
+  l3: {
+    id: "l3",
+    name: "Ligue 3 Betclic",
+    short: "Ligue 3",
+    logo: "assets/logos/competitions/ligue3-betclic.png",
+    clubs: CLUBS_L3,
+  },
 };
 
-const ALL_CLUBS = [...CLUBS_L1, ...CLUBS_L2];
+const ALL_CLUBS = [...CLUBS_L1, ...CLUBS_L2, ...CLUBS_L3];
 
 const POSITIONS = {
   G: { label: "Gardien", category: "GK" },
