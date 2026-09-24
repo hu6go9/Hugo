@@ -61,7 +61,6 @@ const COMPETITIONS = {
     name: "Ligue 1 McDonald's",
     short: "Ligue 1",
     logo: "assets/logos/competitions/ligue1-mcdonalds.png",
-    logoAspect: "wide",
     clubs: CLUBS_L1,
   },
   l2: {
@@ -69,11 +68,6 @@ const COMPETITIONS = {
     name: "Ligue 2 BKT",
     short: "Ligue 2",
     logo: "assets/logos/competitions/ligue2-bkt.png",
-    logoAspect: "stacked",
-    // Logo à encre foncée (pensé pour fond clair) : a besoin d'une plaque
-    // blanche pour rester lisible sur le fond sombre de la carte de partage
-    // (contrairement au lockup Ligue 1, déjà en blanc).
-    logoNeedsPlate: true,
     clubs: CLUBS_L2,
   },
 };

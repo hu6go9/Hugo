@@ -301,19 +301,7 @@ function renderShareCard() {
   const crest = document.getElementById("share-card-crest");
   crest.style.backgroundImage = `url("${club.logo}"), radial-gradient(circle at 32% 28%, #ffffff, #e7e7e7 78%)`;
   crest.style.borderColor = club.color;
-  const logoEl = document.getElementById("share-card-logo");
-  logoEl.style.backgroundImage = `url("${competition.logo}")`;
-  // Les logos "empilés" (numéro + texte + bandeau sponsor, ex: Ligue 2 BKT)
-  // ont un ratio portrait très différent du lockup horizontal de Ligue 1 :
-  // un cadre carré leur laisse la place de rester lisibles.
-  if (competition.logoAspect === "stacked") {
-    logoEl.style.width = "40px";
-    logoEl.style.height = "40px";
-  } else {
-    logoEl.style.width = "115px";
-    logoEl.style.height = "36px";
-  }
-  logoEl.classList.toggle("share-card-logo--plate", !!competition.logoNeedsPlate);
+  document.getElementById("share-card-logo").style.backgroundImage = `url("${competition.logo}")`;
   document.getElementById("share-card-club-name").textContent = club.name;
   document.getElementById("share-card-formation").textContent = FORMATIONS[compo.formation].label;
   document.getElementById("share-card-sub").textContent = `${competition.name} · prototype, données fictives`;
