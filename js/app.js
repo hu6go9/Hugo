@@ -264,9 +264,18 @@ function renderRoster() {
 // Personnalise l'espace de travail aux couleurs du club choisi (terrain,
 // bouton principal, focus...) — scoppé à l'élément donné pour ne pas déteindre
 // sur l'écran de choix du club.
+// Luminance relative (WCAG) pour choisir un texte blanc ou charbon lisible
+// par-dessus la couleur du club (ex: le jaune de Nantes a besoin de texte foncé).
+function relativeLuminance(hex) {
+  const rgb = hex.replace("#", "").match(/.{2}/g).map((h) => parseInt(h, 16) / 255);
+  const lin = rgb.map((c) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)));
+  return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+}
+
 function applyClubTheme(club, el) {
   el.style.setProperty("--accent", club.color);
   el.style.setProperty("--pitch", club.color);
+  el.style.setProperty("--accent-contrast", relativeLuminance(club.color) > 0.45 ? "#1a1a1a" : "#ffffff");
 }
 
 function renderActiveClubHeaders() {

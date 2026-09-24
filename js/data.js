@@ -42,6 +42,11 @@ const CLUBS_L2 = [
   { id: "dunkerque", name: "USL Dunkerque", short: "USLD", color: "#102030", accent: "#E0B070", logo: LOGO_BASE_L2 + "dunkerque.png" },
   { id: "grenoble", name: "Grenoble Foot 38", short: "GF38", color: "#004090", accent: "#FFFFFF", logo: LOGO_BASE_L2 + "grenoble-foot.png" },
   { id: "guingamp", name: "En Avant Guingamp", short: "EAG", color: "#F00000", accent: "#000000", logo: LOGO_BASE_L2 + "guingamp.png" },
+  { id: "laval", name: "Stade Lavallois Mayenne FC", short: "LAVAL", color: "#F05000", accent: "#000000", logo: LOGO_BASE_L2 + "laval.png" },
+  { id: "metz", name: "FC Metz", short: "FCM", color: "#800000", accent: "#FFFFFF", logo: LOGO_BASE_L2 + "metz.png" },
+  { id: "montpellier", name: "Montpellier HSC", short: "MHSC", color: "#202050", accent: "#F06000", logo: LOGO_BASE_L2 + "montpellier.png" },
+  { id: "nancy", name: "AS Nancy Lorraine", short: "ASNL", color: "#F00000", accent: "#FFFFFF", logo: LOGO_BASE_L2 + "nancy.png" },
+  { id: "nantes", name: "FC Nantes", short: "FCN", color: "#F0D000", accent: "#00A040", logo: LOGO_BASE_L2 + "nantes.png" },
 ];
 
 const COMPETITIONS = {
