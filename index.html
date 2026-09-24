@@ -22,8 +22,20 @@
 <main>
 
   <section id="view-compo">
+    <!-- --- Étape 0 : choix de la compétition --- -->
+    <div class="landing" id="competition-picker">
+      <div class="landing-header">
+        <h2>Choisis ta compétition</h2>
+        <p>Compose ensuite le onze type de n'importe quel club.</p>
+      </div>
+      <div class="competition-picker-grid" id="competition-picker-grid"></div>
+    </div>
+
     <!-- --- Étape 1 : choix du club --- -->
-    <div class="landing" id="club-picker">
+    <div class="landing" id="club-picker" style="display:none;">
+      <div class="landing-back-row">
+        <button class="btn btn-ghost" id="change-competition-btn" type="button">‹ Changer de compétition</button>
+      </div>
       <div class="landing-header">
         <h2>Choisis ton club</h2>
         <p>Compose ensuite le onze type, poste par poste.</p>

@@ -7,9 +7,10 @@ const CATS = ["GK", "DEF", "MID", "ATT"];
 
 const state = {
   compo: {
-    activeClub: CLUBS[0].id,
+    competition: "l1",
+    activeClub: CLUBS_L1[0].id,
     byClub: {}, // clubId -> { formation, assignments: { slotCode: playerId } }
-    step: "pick", // "pick" (choix du club) ou "squad" (effectif + terrain) — jamais persisté
+    step: "competition", // "competition" | "pick" (choix du club) | "squad" (effectif + terrain) — step jamais persisté
   },
 };
 
@@ -35,7 +36,8 @@ function loadState() {
     const data = JSON.parse(raw);
     if (data.compo) {
       state.compo.byClub = data.compo.byClub || {};
-      state.compo.activeClub = data.compo.activeClub || CLUBS[0].id;
+      state.compo.competition = COMPETITIONS[data.compo.competition] ? data.compo.competition : "l1";
+      state.compo.activeClub = data.compo.activeClub || COMPETITIONS[state.compo.competition].clubs[0].id;
     }
   } catch (e) {
     /* ignore */
@@ -97,11 +99,29 @@ function currentCompo() {
   return state.compo.byClub[state.compo.activeClub];
 }
 
+function renderCompetitionPicker() {
+  const wrap = document.getElementById("competition-picker-grid");
+  wrap.innerHTML = "";
+  Object.values(COMPETITIONS).forEach((comp) => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "competition-card" + (comp.id === state.compo.competition ? " current" : "");
+    card.innerHTML = `<img class="competition-logo" src="${comp.logo}" alt="${comp.name}" onerror="this.style.display='none'" /><span class="competition-name">${comp.name}</span>`;
+    card.addEventListener("click", () => {
+      state.compo.competition = comp.id;
+      state.compo.step = "pick";
+      scheduleSave();
+      renderCompoView();
+    });
+    wrap.appendChild(card);
+  });
+}
+
 function renderClubPicker() {
   const wrap = document.getElementById("club-picker-grid");
   wrap.innerHTML = "";
   const hasChosen = Object.keys(state.compo.byClub).length > 0;
-  CLUBS.forEach((club) => {
+  COMPETITIONS[state.compo.competition].clubs.forEach((club) => {
     const card = document.createElement("button");
     card.type = "button";
     card.className = "club-picker-card" + (hasChosen && club.id === state.compo.activeClub ? " current" : "");
@@ -272,11 +292,16 @@ function renderShareCard() {
 }
 
 function renderCompoView() {
-  const picking = state.compo.step !== "squad";
-  document.getElementById("club-picker").style.display = picking ? "block" : "none";
-  document.getElementById("compo-layout").style.display = picking ? "none" : "grid";
+  const atCompetition = state.compo.step === "competition";
+  const atPicking = state.compo.step === "pick";
+  document.getElementById("competition-picker").style.display = atCompetition ? "block" : "none";
+  document.getElementById("club-picker").style.display = atPicking ? "block" : "none";
+  document.getElementById("compo-layout").style.display = state.compo.step === "squad" ? "grid" : "none";
+  renderCompetitionPicker();
+  if (atCompetition) return;
+
   renderClubPicker();
-  if (picking) return;
+  if (atPicking) return;
 
   renderActiveClubHeaders();
   renderFormationSelect();
@@ -306,6 +331,10 @@ function initCompoControls() {
   });
   document.getElementById("change-club-btn").addEventListener("click", () => {
     state.compo.step = "pick";
+    renderCompoView();
+  });
+  document.getElementById("change-competition-btn").addEventListener("click", () => {
+    state.compo.step = "competition";
     renderCompoView();
   });
 }

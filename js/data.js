@@ -1,15 +1,17 @@
 /**
- * Données MOCKÉES pour le prototype "Compos Ligue 1".
- * Clubs = les 18 clubs de Ligue 1 McDonald's (saison confirmée par Hugo),
- * couleurs extraites automatiquement des vrais blasons fournis, logos en local.
+ * Données MOCKÉES pour le prototype "Compos".
+ * Deux compétitions : Ligue 1 McDonald's (18 clubs, saison confirmée par Hugo)
+ * et Ligue 2 BKT (clubs ajoutés au fil des logos envoyés par Hugo).
+ * Couleurs extraites automatiquement des vrais blasons fournis, logos en local.
  * Joueurs = générés aléatoirement (seed fixe) -> à remplacer par l'API réelle.
  */
 
 const LOGO_BASE = "assets/logos/clubs/";
+const LOGO_BASE_L2 = "assets/logos/clubs-l2/";
 
 // Couleurs officielles RVB issues de la "Charte Clubs L1 2025-2026" fournie par Hugo,
 // sauf ESTAC et Le Mans FC (absents de ce document) qui gardent les couleurs extraites des logos.
-const CLUBS = [
+const CLUBS_L1 = [
   { id: "psg", name: "Paris Saint-Germain", short: "PSG", color: "#004F91", accent: "#E30613", logo: LOGO_BASE + "psg.png" },
   { id: "om", name: "Olympique de Marseille", short: "OM", color: "#0098D8", accent: "#FFFFFF", logo: LOGO_BASE + "om-marseille.png" },
   { id: "asm", name: "AS Monaco", short: "ASM", color: "#D70032", accent: "#A8884D", logo: LOGO_BASE + "as-monaco.png" },
@@ -29,6 +31,34 @@ const CLUBS = [
   { id: "pfc", name: "Paris FC", short: "PFC", color: "#0A0E2D", accent: "#199ACD", logo: LOGO_BASE + "paris-fc.png" },
   { id: "lmfc", name: "Le Mans FC", short: "LMFC", color: "#A00010", accent: "#F0B000", logo: LOGO_BASE + "lemans-fc.png" },
 ];
+
+// Couleurs extraites automatiquement des blasons envoyés par Hugo (pas de charte
+// officielle disponible pour la Ligue 2). Liste à compléter au fil des logos reçus.
+const CLUBS_L2 = [
+  { id: "annecy", name: "FC Annecy", short: "ANNECY", color: "#F00000", accent: "#FFFFFF", logo: LOGO_BASE_L2 + "annecy.png" },
+  { id: "usbco", name: "US Boulogne Côte d'Opale", short: "USBCO", color: "#E00000", accent: "#101010", logo: LOGO_BASE_L2 + "us-boulogne.png" },
+  { id: "clermont", name: "Clermont Foot 63", short: "CF63", color: "#002060", accent: "#D00030", logo: LOGO_BASE_L2 + "clermont-foot.png" },
+  { id: "dijon", name: "Dijon FCO", short: "DFCO", color: "#E00010", accent: "#FFFFFF", logo: LOGO_BASE_L2 + "dijon-fco.png" },
+];
+
+const COMPETITIONS = {
+  l1: {
+    id: "l1",
+    name: "Ligue 1 McDonald's",
+    short: "Ligue 1",
+    logo: "assets/logos/competitions/ligue1-mcdonalds.png",
+    clubs: CLUBS_L1,
+  },
+  l2: {
+    id: "l2",
+    name: "Ligue 2 BKT",
+    short: "Ligue 2",
+    logo: "assets/logos/competitions/ligue2-bkt.png", // logo à venir
+    clubs: CLUBS_L2,
+  },
+};
+
+const ALL_CLUBS = [...CLUBS_L1, ...CLUBS_L2];
 
 const POSITIONS = {
   G: { label: "Gardien", category: "GK" },
@@ -267,10 +297,10 @@ function generateRoster(clubId, seedBase) {
   return roster;
 }
 
-const PLAYERS = CLUBS.flatMap((club, i) => generateRoster(club.id, 1000 + i * 37));
+const PLAYERS = ALL_CLUBS.flatMap((club, i) => generateRoster(club.id, 1000 + i * 37));
 
 function getClub(clubId) {
-  return CLUBS.find((c) => c.id === clubId);
+  return ALL_CLUBS.find((c) => c.id === clubId);
 }
 
 function playersByClub(clubId) {

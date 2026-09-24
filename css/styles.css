@@ -295,6 +295,47 @@ select:focus { border-color: var(--accent); }
 }
 .landing-header p { color: var(--text-dim); margin: 0; font-size: 0.9rem; }
 
+.landing-back-row { max-width: 980px; margin: 0 auto 14px; }
+
+/* ---- Étape 0 : choix de la compétition ---- */
+.competition-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.competition-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 20px;
+  cursor: pointer;
+  text-align: center;
+  font-family: inherit;
+  color: var(--text);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.competition-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.competition-card.current { border-color: var(--pink); }
+.competition-card .competition-logo {
+  height: 64px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+.competition-card .competition-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
 /* ---- Étape 1 : choix du club ---- */
 .club-picker-grid {
   display: grid;
