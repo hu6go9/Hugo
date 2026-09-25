@@ -19,7 +19,7 @@ const CLUBS_L1 = [
   { id: "losc", name: "LOSC Lille", short: "LOSC", color: "#E41B13", accent: "#211E5F", logo: LOGO_BASE + "losc-lille.png" },
   { id: "ol", name: "Olympique Lyonnais", short: "OL", color: "#0F23AA", accent: "#E5202E", logo: LOGO_BASE + "olympique-lyonnais.png" },
   { id: "ogcn", name: "OGC Nice", short: "OGCN", color: "#DA2128", accent: "#2C2A29", logo: LOGO_BASE + "ogc-nice.png" },
-  { id: "rcl", name: "RC Lens", short: "RCL", color: "#C51315", accent: "#FFD500", logo: LOGO_BASE + "rc-lens.png" },
+  { id: "rcl", name: "RC Lens", short: "RCL", color: "#FFD500", accent: "#C51315", logo: LOGO_BASE + "rc-lens.png" },
   { id: "srfc", name: "Stade Rennais", short: "SRFC", color: "#DA261B", accent: "#0D181C", logo: LOGO_BASE + "stade-rennais.png" },
   { id: "rcs", name: "RC Strasbourg", short: "RCS", color: "#009FE3", accent: "#DC2F34", logo: LOGO_BASE + "rc-strasbourg.png" },
   { id: "tfc", name: "Toulouse FC", short: "TFC", color: "#3F2B56", accent: "#EB0045", logo: LOGO_BASE + "toulouse-fc.png" },
