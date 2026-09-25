@@ -139,20 +139,16 @@ function renderClubPicker() {
     card.addEventListener("click", () => {
       if (picking) return;
       picking = true;
-      // Petit "pop" de confirmation dans la couleur du club, puis un
-      // court chargement circulaire avant de basculer sur l'effectif —
-      // habillage volontairement "premium" plutôt qu'un simple switch instantané.
+      // Pop + tour rapide de la traînée dès le clic — habillage
+      // volontairement "premium" plutôt qu'un simple switch instantané.
       card.style.setProperty("--pick-color", club.color);
-      card.classList.add("picked");
+      card.classList.add("picked", "loading");
       setTimeout(() => {
-        card.classList.add("loading");
-        setTimeout(() => {
-          state.compo.activeClub = club.id;
-          state.compo.step = "squad";
-          scheduleSave();
-          renderCompoView();
-        }, 600);
-      }, 200);
+        state.compo.activeClub = club.id;
+        state.compo.step = "squad";
+        scheduleSave();
+        renderCompoView();
+      }, 400);
     });
     wrap.appendChild(card);
   });

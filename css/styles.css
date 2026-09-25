@@ -390,9 +390,9 @@ select:focus { border-color: var(--accent); }
      carré ne s'inscrit sans rognage que jusqu'à ~70,7% du diamètre. */
   padding: 11px;
 }
-/* Confirmation de sélection façon étoile filante : une tête lumineuse
-   nette avec une traînée qui s'estompe derrière elle, un seul tour du
-   blason (qui lui reste net — ce n'est pas un chargement). */
+/* Confirmation de sélection façon étoile filante : une traînée dans la
+   couleur du club qui s'estompe progressivement, un tour rapide dès le
+   clic (le blason, lui, reste net — ce n'est pas un chargement). */
 .club-picker-card .card-loader {
   position: absolute;
   inset: -4px;
@@ -418,22 +418,9 @@ select:focus { border-color: var(--accent); }
   -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
   mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
 }
-.club-picker-card .card-loader::after {
-  /* tête : le point lumineux qui mène la traînée */
-  content: "";
-  position: absolute;
-  top: -1px;
-  left: 50%;
-  width: 5px;
-  height: 5px;
-  margin-left: -2.5px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 6px 2px var(--pick-color, var(--pink)), 0 0 2px 1px #fff;
-}
 .club-picker-card.loading .card-loader {
   opacity: 1;
-  animation: cardShootingStar 0.6s ease-in 1;
+  animation: cardShootingStar 0.4s ease-in 1;
 }
 @keyframes cardShootingStar {
   0% { transform: rotate(0deg); opacity: 1; }
