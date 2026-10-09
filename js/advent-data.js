@@ -3,7 +3,8 @@
  * 24 cases, 4 mécaniques réparties (6 de chaque) : lot, exclusif, quiz, promo.
  * Lots, codes promo et contenus sont fictifs : à remplacer par la validation
  * marketing / partenariats / juridique (règlement du jeu) avant mise en ligne.
- * club: id de CLUBS_L1 (js/data.js) ou null = case "Ligue" (logo compétition).
+ * club: id de CLUBS_L1 (js/data.js) ou null = étoile "Ligue" (logo compétition).
+ * Ce fichier joue le rôle du CMS : seul js/advent-api.js le lit, jamais le front.
  */
 
 const ADVENT_YEAR = 2026;

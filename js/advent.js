@@ -1,12 +1,13 @@
 /* ==========================================================
    Les Étoiles de la Ligue 1 McDonald's — saison 2 (avent 2026)
-   Prototype : calendrier + lecteur story 3 pages, comme les stories 2025
-   (couverture → étoile révélée → contenu / CTA).
+   Front du calendrier : grille + lecteur story 3 pages
+   (couverture → étoile révélée → contenu), branché sur AdventAPI.
    ========================================================== */
 
-const ADVENT_STORAGE_KEY = "l1-advent-2026-v1";
 const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const L1_LOGO = "assets/logos/competitions/ligue1-mcdonalds.png";
+const PARAMS = new URLSearchParams(location.search);
+const EMBED = PARAMS.get("embed") === "app"; // intégration dans la webview de l'appli
 
 // Pages d'une étoile. duration = défilement auto (ms) ; null = page interactive, pas de chrono.
 const STORY_PAGES = [
@@ -15,35 +16,14 @@ const STORY_PAGES = [
   { id: "content", duration: null },
 ];
 
-const advent = {
-  opened: {}, // day -> true
-  lots: {}, // day -> true (participation enregistrée)
-  quiz: {}, // day -> index de la réponse choisie
+const ui = {
   demoDay: null, // null = date réelle, sinon 0..25
+  calendar: [], // réponse de getCalendar()
 };
-
-// ---------------- Persistence ----------------
-function saveAdvent() {
-  try {
-    localStorage.setItem(ADVENT_STORAGE_KEY, JSON.stringify({ opened: advent.opened, lots: advent.lots, quiz: advent.quiz }));
-  } catch (e) {
-    /* stockage indisponible (mode privé, quota) — la session continue sans sauvegarde */
-  }
-}
-
-function loadAdvent() {
-  try {
-    const data = JSON.parse(localStorage.getItem(ADVENT_STORAGE_KEY) || "{}");
-    advent.opened = data.opened || {};
-    advent.lots = data.lots || {};
-    advent.quiz = data.quiz || {};
-  } catch (e) {
-    /* données absentes ou corrompues : on repart de zéro */
-  }
-}
 
 // ---------------- Dates ----------------
 // 0 = avant le 1er décembre, 1..24 = jour en cours, 25 = après Noël.
+// En prod, c'est le serveur qui fait foi (heure de Paris) ; le front ne sert qu'à l'affichage.
 function realDay() {
   const now = new Date();
   const y = now.getFullYear();
@@ -53,51 +33,33 @@ function realDay() {
 }
 
 function currentDay() {
-  return advent.demoDay === null ? realDay() : advent.demoDay;
+  return ui.demoDay === null ? realDay() : ui.demoDay;
 }
+AdventAPI.setClock(currentDay);
 
-function dayData(day) {
-  return ADVENT_DAYS.find((d) => d.day === day);
-}
-
-function clubOf(entry) {
-  return entry.club ? getClub(entry.club) : null;
-}
-
-function isAvailable(day) {
-  return day <= currentDay();
+function calDay(day) {
+  return ui.calendar.find((c) => c.day === day);
 }
 
 // Prochaine étoile accessible pas encore ouverte (pour enchaîner comme des stories).
 function nextUnopened(afterDay) {
-  const max = Math.min(currentDay(), 24);
-  for (let d = 1; d <= max; d++) {
-    if (d !== afterDay && !advent.opened[d]) return d;
-  }
-  return null;
+  const next = ui.calendar.find((c) => c.unlocked && !c.opened && c.day !== afterDay);
+  return next ? next.day : null;
 }
 
-// ---------------- Score ----------------
-function computeStats() {
-  const openedCount = Object.keys(advent.opened).length;
-  let points = openedCount * ADVENT_POINTS.open;
-  points += Object.keys(advent.lots).length * ADVENT_POINTS.lotEntry;
-  for (const [day, choice] of Object.entries(advent.quiz)) {
-    if (dayData(Number(day)).answer === choice) points += ADVENT_POINTS.quizCorrect;
-  }
-  // Série : jours consécutifs ouverts jusqu'à aujourd'hui (hier si l'étoile du jour attend encore).
-  const today = Math.min(currentDay(), 24);
-  let d = advent.opened[today] ? today : today - 1;
-  let streak = 0;
-  while (d >= 1 && advent.opened[d]) { streak++; d--; }
-  return { openedCount, points, streak };
+function clubOf(clubId) {
+  return clubId ? getClub(clubId) : null;
 }
 
-function renderStats() {
-  const { openedCount, points, streak } = computeStats();
+// ---------------- Progression ----------------
+async function renderStats() {
+  const { openedCount, points, streak } = await AdventAPI.getProgress();
   document.getElementById("stat-opened").textContent = openedCount;
   document.getElementById("stat-streak").textContent = streak;
   document.getElementById("stat-points").textContent = points;
+  document.getElementById("hero-progress-fill").style.width = `${(openedCount / 24) * 100}%`;
+  document.getElementById("hero-progress-label").textContent =
+    openedCount === 0 ? "Aucune étoile allumée pour l'instant" : `${openedCount} étoile${openedCount > 1 ? "s" : ""} allumée${openedCount > 1 ? "s" : ""} sur 24`;
 }
 
 // ---------------- Étoile (SVG) ----------------
@@ -119,11 +81,11 @@ function starSVG(day) {
     <svg class="star" viewBox="0 0 100 100" aria-hidden="true">
       <polygon class="star-outer" points="${STAR_OUTER}" />
       <polygon class="star-inner" points="${STAR_INNER}" />
-      <text class="star-num" x="50" y="57">${day}</text>
+      ${day ? `<text class="star-num" x="50" y="57">${day}</text>` : ""}
     </svg>`;
 }
 
-// ---------------- Compte à rebours + CTA du hero ----------------
+// ---------------- Hero : CTA, rappel, compte à rebours ----------------
 let countdownTimer = null;
 
 function pad(n) { return String(n).padStart(2, "0"); }
@@ -143,13 +105,19 @@ function renderHeroCta() {
   const btn = document.getElementById("hero-cta");
   const day = currentDay();
   btn.hidden = day < 1 || day > 24;
-  if (!btn.hidden) btn.textContent = advent.opened[day] ? "Revoir l'étoile du jour" : "Ouvrir l'étoile du jour";
+  if (!btn.hidden) btn.textContent = calDay(day)?.opened ? "Revoir l'étoile du jour" : "Ouvrir l'étoile du jour";
+
+  const reminder = document.getElementById("reminder-btn");
+  const on = AdventAPI.getReminder();
+  reminder.hidden = day > 23;
+  reminder.setAttribute("aria-pressed", on);
+  reminder.textContent = on ? "🔔 Rappel activé chaque matin" : "🔔 Me rappeler chaque jour";
 }
 
 function renderCountdown() {
   const el = document.getElementById("countdown");
   const day = currentDay();
-  const live = advent.demoDay === null;
+  const live = ui.demoDay === null;
   clearInterval(countdownTimer);
 
   if (day === 0) {
@@ -175,74 +143,81 @@ function renderCountdown() {
 }
 
 // ---------------- Grille ----------------
-function tileState(day) {
-  if (advent.opened[day]) return "opened";
-  if (!isAvailable(day)) return "locked";
-  return day === currentDay() ? "today" : "missed";
+function tileState(c) {
+  if (c.opened) return "opened";
+  if (!c.unlocked) return "locked";
+  return c.day === currentDay() ? "today" : "missed";
 }
 
-function tileAriaLabel(day, state) {
-  const entry = dayData(day);
-  if (state === "locked") return `Étoile ${day}, s'ouvre le ${day} décembre`;
-  if (state === "opened") return `Étoile ${day}, ouverte : ${ADVENT_TYPES[entry.type].label}, ${entry.title}`;
-  return `Étoile ${day}, à ouvrir${state === "today" ? " aujourd'hui" : ""}`;
+function tileAriaLabel(c, state) {
+  if (state === "locked") return `Étoile ${c.day}, s'ouvre le ${c.day} décembre`;
+  if (state === "opened") return `Étoile ${c.day}, ouverte : ${ADVENT_TYPES[c.type].label}, ${c.title}`;
+  return `Étoile ${c.day}, à ouvrir${state === "today" ? " aujourd'hui" : ""}`;
 }
 
 function renderGrid() {
   const grid = document.getElementById("advent-grid");
   grid.innerHTML = "";
   for (const day of ADVENT_LAYOUT) {
-    const entry = dayData(day);
-    const club = clubOf(entry);
-    const state = tileState(day);
+    const c = calDay(day);
+    const state = tileState(c);
     const tile = document.createElement("button");
     tile.type = "button";
-    tile.className = `star-tile state-${state} type-${entry.type}${entry.big ? " tile-big" : ""}`;
+    tile.className = `star-tile state-${state}${c.big ? " tile-big" : ""}`;
     tile.dataset.day = day;
-    tile.setAttribute("aria-label", tileAriaLabel(day, state));
+    tile.setAttribute("aria-label", tileAriaLabel(c, state));
 
     let tag = "";
     if (state === "today") tag = `<span class="tile-tag">Aujourd'hui</span>`;
     else if (state === "missed") tag = `<span class="tile-tag tile-tag-soft">À rattraper</span>`;
     else if (state === "locked") tag = `<span class="tile-lock" aria-hidden="true">🔒</span>`;
 
-    const caption = state === "opened"
-      ? `${ADVENT_TYPES[entry.type].icon} ${esc(entry.title)}`
-      : "Les Étoiles";
-    const crest = state === "opened" ? `<img class="tile-crest" src="${club ? club.logo : L1_LOGO}" alt="" loading="lazy" />` : "";
+    let caption = "Les Étoiles";
+    let crest = "";
+    if (state === "opened") {
+      const club = clubOf(c.club);
+      caption = `${ADVENT_TYPES[c.type].icon} ${esc(c.title)}`;
+      crest = `<img class="tile-crest" src="${club ? club.logo : L1_LOGO}" alt="" loading="lazy" />`;
+    }
 
     tile.innerHTML = `${starSVG(day)}${crest}${tag}<span class="tile-caption" aria-hidden="true">${caption}</span>`;
-    tile.addEventListener("click", () => onTileClick(day, tile));
+    tile.addEventListener("click", () => onTileClick(c, tile));
     grid.appendChild(tile);
   }
 }
 
-function onTileClick(day, tile) {
-  if (!isAvailable(day)) {
+function onTileClick(c, tile) {
+  if (!c.unlocked) {
     tile.classList.remove("shake");
     void tile.offsetWidth; // relance l'animation
     tile.classList.add("shake");
-    toast(`Patience ! Cette étoile s'ouvre le ${day} décembre.`);
+    toast(`Patience ! Cette étoile s'ouvre le ${c.day} décembre.`);
     return;
   }
   // Depuis la grille, on saute la couverture : on arrive direct sur l'étoile révélée
   // (ou sur le contenu si elle est déjà ouverte).
-  openStory(day, advent.opened[day] ? 2 : 1);
+  openStory(c.day, c.opened ? 2 : 1);
 }
 
 // ---------------- Lecteur story ----------------
-const story = { day: null, index: 0, timer: null, lastFocus: null };
+const story = { day: null, index: 0, data: null, timer: null, lastFocus: null };
 
-function openStory(day, startIndex = 0) {
+async function openStory(day, startIndex = 0) {
+  let data;
+  try {
+    data = await AdventAPI.openDay(day);
+  } catch (e) {
+    toast(e.message);
+    return;
+  }
   const el = document.getElementById("story");
   if (el.hidden) story.lastFocus = document.activeElement;
   story.day = day;
-  advent.opened[day] = true;
-  saveAdvent();
-  renderStats();
+  story.data = data;
   el.hidden = false;
   document.body.classList.add("modal-open");
   history.replaceState(null, "", urlWith({ case: day }));
+  await syncCalendar(); // l'étoile passe "ouverte" avant de calculer la suivante
   showPage(startIndex);
   document.getElementById("story-close").focus();
 }
@@ -275,8 +250,8 @@ function showPage(index) {
   clearTimeout(story.timer);
   story.index = index;
   const page = STORY_PAGES[index];
-  const entry = dayData(story.day);
-  const club = clubOf(entry);
+  const entry = story.data.entry;
+  const club = clubOf(entry.club);
   const el = document.getElementById("story");
   el.style.setProperty("--club", club ? club.color : "#085FFF");
   el.querySelector(".story").setAttribute("aria-label", `Les Étoiles, ${story.day} décembre`);
@@ -305,16 +280,16 @@ function showPage(index) {
 }
 
 function renderCover(entry) {
-  const label = entry.day === currentDay() ? "Ouvrir l'étoile du jour" : `Ouvrir l'étoile n°${entry.day}`;
+  const label = story.data.isToday ? "Ouvrir l'étoile du jour" : `Ouvrir l'étoile n°${entry.day}`;
   return `
-    <div class="cover-bg" aria-hidden="true"></div>
+    <div class="cover-bg" aria-hidden="true">${starSVG()}</div>
     <div class="cover-title">
       <span class="cover-les">Les</span>
       <span class="cover-etoiles gold-text">Étoiles</span>
       <span class="cover-dela">de la</span>
       <img class="cover-logo" src="${L1_LOGO}" alt="Ligue 1 McDonald's" />
     </div>
-    <p class="cover-date">${entry.day} décembre ${ADVENT_YEAR}</p>
+    <p class="cover-date">Étoile n°${entry.day} · ${entry.day} décembre ${ADVENT_YEAR}</p>
     <button class="btn cover-cta" type="button" data-action="next">${label}</button>`;
 }
 
@@ -333,10 +308,10 @@ function renderContentPage(entry, club) {
         <img class="content-crest" src="${club ? club.logo : L1_LOGO}" alt="${club ? esc(club.name) : "Ligue 1 McDonald's"}" />
         <div>
           <p class="content-kicker">Étoile n°${entry.day} · ${type.icon} ${type.label}</p>
-          <h2 id="story-title">${esc(entry.title)}</h2>
+          <h2>${esc(entry.title)}</h2>
         </div>
       </div>
-      <div class="content-body">${renderContent(entry, club)}</div>
+      <div class="content-body">${renderContent(entry)}</div>
     </div>
     <div class="content-foot">
       <button class="btn btn-ghost" type="button" data-action="prev" aria-label="Revoir l'étoile">‹</button>
@@ -345,31 +320,32 @@ function renderContentPage(entry, club) {
     </div>`;
 }
 
-function renderContent(entry, club) {
-  const today = entry.day === currentDay();
+function renderContent(entry) {
+  const { isToday, participated, quiz } = story.data;
   switch (entry.type) {
     case "lot": {
-      const done = advent.lots[entry.day];
-      const closed = !today && !done;
-      const label = done ? "Participation enregistrée ✓" : closed ? "Concours terminé" : "Je participe";
+      const closed = !isToday && !participated;
+      const signedIn = !!AdventAPI.getUser();
+      let label = "Je participe";
+      if (participated) label = "Participation enregistrée ✓";
+      else if (closed) label = "Concours terminé";
+      else if (!signedIn) label = "Se connecter pour participer";
       return `
         <p>${esc(entry.text)}</p>
         <p class="meta">${entry.winners} gagnant${entry.winners > 1 ? "s" : ""} · tirage au sort le ${entry.day} décembre à minuit</p>
-        <button class="btn btn-primary btn-wide" type="button" data-action="participate" ${done || closed ? "disabled" : ""}>${label}</button>
-        ${closed ? `<p class="meta">Ce concours n'était ouvert que le ${entry.day} décembre. Reviens chaque jour pour ne rien rater.</p>` : ""}
-        <p class="fine">Jeu gratuit sans obligation d'achat. Règlement complet à venir (prototype).</p>`;
+        <button class="btn btn-primary btn-wide" type="button" data-action="participate" ${participated || closed ? "disabled" : ""}>${label}</button>
+        ${closed ? `<p class="meta">Ce concours n'était ouvert que le ${entry.day} décembre. Active le rappel pour ne plus en rater.</p>` : ""}
+        <p class="fine">Jeu gratuit sans obligation d'achat, une participation par compte. Règlement complet à venir (prototype).</p>`;
     }
     case "quiz": {
-      const chosen = advent.quiz[entry.day];
-      const answered = chosen !== undefined;
       const opts = entry.options.map((o, i) => {
         let cls = "quiz-opt";
-        if (answered && i === entry.answer) cls += " correct";
-        else if (answered && i === chosen) cls += " wrong";
-        return `<button class="${cls}" type="button" data-answer="${i}" ${answered ? "disabled" : ""}>${esc(o)}</button>`;
+        if (quiz && i === quiz.answer) cls += " correct";
+        else if (quiz && i === quiz.choice) cls += " wrong";
+        return `<button class="${cls}" type="button" data-answer="${i}" ${quiz ? "disabled" : ""}>${esc(o)}</button>`;
       }).join("");
-      const feedback = answered
-        ? `<p class="quiz-feedback">${chosen === entry.answer ? `Bien joué, +${ADVENT_POINTS.quizCorrect} points !` : "Raté, ce sera pour la prochaine !"} ${esc(entry.explain)}</p>`
+      const feedback = quiz
+        ? `<p class="quiz-feedback">${quiz.correct ? `Bien joué, +${ADVENT_POINTS.quizCorrect} points !` : "Raté, ce sera pour la prochaine !"} ${esc(quiz.explain)}</p>`
         : `<p class="meta">Une seule tentative. Bonne réponse = +${ADVENT_POINTS.quizCorrect} points.</p>`;
       return `<p class="quiz-question">${esc(entry.question)}</p><div class="quiz-opts">${opts}</div>${feedback}`;
     }
@@ -404,17 +380,25 @@ function bindPage(entry, club, root) {
   root.querySelector('[data-action="prev"]')?.addEventListener("click", storyPrev);
   root.querySelector('[data-action="share"]')?.addEventListener("click", () => shareDay(entry));
 
-  root.querySelector('[data-action="participate"]')?.addEventListener("click", () => {
-    advent.lots[entry.day] = true;
-    saveAdvent();
-    renderStats();
-    toast(`Participation enregistrée, +${ADVENT_POINTS.lotEntry} points. Bonne chance !`);
-    showPage(story.index);
+  root.querySelector('[data-action="participate"]')?.addEventListener("click", async () => {
+    if (!AdventAPI.getUser()) {
+      openSignIn("Connecte-toi pour participer au tirage au sort.", () => showPage(story.index));
+      return;
+    }
+    try {
+      await AdventAPI.participate(entry.day);
+      story.data.participated = true;
+      toast(`Participation enregistrée, +${ADVENT_POINTS.lotEntry} points. Bonne chance !`);
+      renderStats();
+      showPage(story.index);
+    } catch (e) {
+      toast(e.message);
+    }
   });
 
-  root.querySelectorAll("[data-answer]").forEach((btn) => btn.addEventListener("click", () => {
-    advent.quiz[entry.day] = Number(btn.dataset.answer);
-    saveAdvent();
+  root.querySelectorAll("[data-answer]").forEach((btn) => btn.addEventListener("click", async () => {
+    root.querySelectorAll("[data-answer]").forEach((b) => { b.disabled = true; });
+    story.data.quiz = await AdventAPI.answerQuiz(entry.day, Number(btn.dataset.answer));
     renderStats();
     showPage(story.index);
   }));
@@ -449,6 +433,28 @@ async function shareDay(entry) {
   } catch (e) {
     /* partage annulé par l'utilisateur */
   }
+}
+
+// ---------------- Compte (connexion simulée) ----------------
+let signInCallback = null;
+
+function openSignIn(reason, onDone) {
+  signInCallback = onDone || null;
+  document.getElementById("signin-reason").textContent = reason;
+  document.getElementById("signin").hidden = false;
+  document.getElementById("signin-go").focus();
+}
+
+function closeSignIn() {
+  document.getElementById("signin").hidden = true;
+  signInCallback = null;
+}
+
+function renderAccount() {
+  const btn = document.getElementById("account-btn");
+  const user = AdventAPI.getUser();
+  btn.textContent = user ? `👤 ${user.name}` : "Se connecter";
+  btn.setAttribute("aria-label", user ? `Connecté en tant que ${user.name}, se déconnecter` : "Se connecter");
 }
 
 // ---------------- Fond d'écran généré ----------------
@@ -620,23 +626,22 @@ function initDemo() {
   options.push(["25", "Après Noël"]);
   select.innerHTML = options.map(([v, l]) => `<option value="${v}">${l}</option>`).join("");
 
-  const fromUrl = new URLSearchParams(location.search).get("jour");
-  if (fromUrl !== null && /^\d+$/.test(fromUrl) && Number(fromUrl) <= 25) advent.demoDay = Number(fromUrl);
-  select.value = advent.demoDay === null ? "real" : String(advent.demoDay);
+  const fromUrl = PARAMS.get("jour");
+  if (fromUrl !== null && /^\d+$/.test(fromUrl) && Number(fromUrl) <= 25) ui.demoDay = Number(fromUrl);
+  select.value = ui.demoDay === null ? "real" : String(ui.demoDay);
 
   select.addEventListener("change", () => {
-    advent.demoDay = select.value === "real" ? null : Number(select.value);
-    history.replaceState(null, "", urlWith({ jour: advent.demoDay }));
+    ui.demoDay = select.value === "real" ? null : Number(select.value);
+    history.replaceState(null, "", urlWith({ jour: ui.demoDay }));
     refresh();
   });
 
   document.getElementById("demo-reset").addEventListener("click", () => {
-    advent.opened = {};
-    advent.lots = {};
-    advent.quiz = {};
-    saveAdvent();
+    AdventAPI.resetDemo();
+    AdventAPI.signOut();
+    renderAccount();
     refresh();
-    toast("Progression remise à zéro.");
+    toast("Progression et compte remis à zéro.");
   });
 }
 
@@ -645,31 +650,69 @@ function esc(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-function refresh() {
-  renderGrid();
+async function syncCalendar() {
+  ui.calendar = await AdventAPI.getCalendar();
   renderStats();
+}
+
+async function refresh() {
+  await syncCalendar();
+  renderGrid();
   renderCountdown();
   renderHeroCta();
 }
 
 // ---------------- Init ----------------
-loadAdvent();
-initDemo();
-refresh();
-startSnow();
+async function init() {
+  if (EMBED) document.body.classList.add("embed");
+  initDemo();
+  renderAccount();
+  startSnow();
+  await refresh();
 
-document.getElementById("hero-cta").addEventListener("click", () => openStory(currentDay(), 0));
-document.getElementById("story-close").addEventListener("click", closeStory);
-document.getElementById("story-prev").addEventListener("click", storyPrev);
-document.getElementById("story-next").addEventListener("click", storyNext);
-document.getElementById("story").addEventListener("click", (e) => { if (e.target.id === "story") closeStory(); });
-document.addEventListener("keydown", (e) => {
-  if (document.getElementById("story").hidden) return;
-  if (e.key === "Escape") closeStory();
-  else if (e.key === "ArrowRight") storyNext();
-  else if (e.key === "ArrowLeft") storyPrev();
-});
+  document.getElementById("hero-cta").addEventListener("click", () => openStory(currentDay(), 0));
+  document.getElementById("reminder-btn").addEventListener("click", async () => {
+    const on = !AdventAPI.getReminder();
+    await AdventAPI.setReminder(on);
+    renderHeroCta();
+    toast(on
+      ? (EMBED ? "C'est noté : une notif chaque matin à 9h jusqu'à Noël." : "C'est noté : un rappel chaque matin à 9h jusqu'à Noël.")
+      : "Rappel désactivé.");
+  });
+  document.getElementById("account-btn").addEventListener("click", () => {
+    if (AdventAPI.getUser()) {
+      AdventAPI.signOut();
+      renderAccount();
+      toast("Tu es déconnecté.");
+    } else {
+      openSignIn("Retrouve ta progression sur le site et l'appli, et participe aux tirages au sort.");
+    }
+  });
+  document.getElementById("signin-go").addEventListener("click", async () => {
+    await AdventAPI.signIn();
+    renderAccount();
+    const cb = signInCallback;
+    closeSignIn();
+    toast("Connecté, bienvenue !");
+    cb?.();
+  });
+  document.getElementById("signin-later").addEventListener("click", closeSignIn);
 
-// Lien partagé (?case=12) : la story démarre sur la couverture, comme en 2025.
-const sharedCase = Number(new URLSearchParams(location.search).get("case"));
-if (sharedCase >= 1 && sharedCase <= 24 && isAvailable(sharedCase)) openStory(sharedCase, 0);
+  document.getElementById("story-close").addEventListener("click", closeStory);
+  document.getElementById("story-prev").addEventListener("click", storyPrev);
+  document.getElementById("story-next").addEventListener("click", storyNext);
+  document.getElementById("story").addEventListener("click", (e) => { if (e.target.id === "story") closeStory(); });
+  document.addEventListener("keydown", (e) => {
+    if (!document.getElementById("signin").hidden) { if (e.key === "Escape") closeSignIn(); return; }
+    if (document.getElementById("story").hidden) return;
+    if (e.key === "Escape") closeStory();
+    else if (e.key === "ArrowRight") storyNext();
+    else if (e.key === "ArrowLeft") storyPrev();
+  });
+
+  // Lien partagé (?case=12) : la story démarre sur la couverture, comme en 2025.
+  const sharedCase = Number(PARAMS.get("case"));
+  if (sharedCase >= 1 && sharedCase <= 24 && sharedCase <= currentDay()) openStory(sharedCase, 0);
+}
+
+init();

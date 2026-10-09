@@ -379,3 +379,55 @@ body.modal-open { overflow: hidden; }
   .star-tile:not(.tile-big) { padding: 12%; }
   .tile-tag { font-size: 0.5rem; padding: 2px 5px; top: 5px; left: 5px; }
 }
+
+/* ---- Hero : actions, progression ---- */
+.hero-actions { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+.hero-actions .hero-cta { margin-bottom: 0; }
+.reminder-btn { padding: 11px 16px; }
+.reminder-btn[aria-pressed="true"] { border-color: var(--or); color: var(--or-light); }
+.reminder-btn[hidden] { display: none; }
+.hero-progress { max-width: 360px; margin: 18px auto 0; display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.hero-progress-track { width: 100%; height: 6px; border-radius: 999px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
+.hero-progress-fill { height: 100%; width: 0; background: var(--gold-gradient); border-radius: inherit; transition: width 0.6s ease; }
+.hero-progress-label { font-size: 0.72rem; color: var(--text-dim); }
+
+.account-btn { padding: 7px 12px; font-size: 0.72rem; }
+
+/* ---- Couverture : grande étoile en filigrane ---- */
+.cover-bg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0.09; pointer-events: none; }
+.cover-bg .star { width: 120%; height: auto; }
+
+/* ---- Feuille de connexion ---- */
+.sheet-backdrop {
+  position: fixed; inset: 0; z-index: 70;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.sheet-backdrop[hidden] { display: none; }
+.sheet {
+  width: 100%; max-width: 440px;
+  background: var(--charbon); border: 1px solid var(--border); border-bottom: none;
+  border-radius: 18px 18px 0 0; padding: 26px 22px 22px; text-align: center;
+  animation: sheet-up 0.25s ease-out;
+}
+@media (min-width: 521px) { .sheet-backdrop { align-items: center; } .sheet { border-radius: 18px; border-bottom: 1px solid var(--border); } }
+.sheet h2 { font-family: "Insatiable Display Compressed", var(--font-display); font-size: 1.8rem; text-transform: uppercase; margin: 0 0 8px; }
+.sheet p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.45; margin: 0 0 18px; }
+.sheet .fine { font-size: 0.7rem; margin: 6px 0 0; }
+.sheet-star {
+  width: 54px; height: 54px; margin: 0 auto 10px;
+  background: var(--gold-gradient);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+@keyframes sheet-up { from { transform: translateY(30px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
+
+/* ---- Mode intégré à l'appli (?embed=app) : la webview fournit déjà l'en-tête ---- */
+body.embed .brand, body.embed footer.credit { display: none; }
+body.embed header.topbar { padding: 10px 16px; justify-content: center; }
+body.embed .advent-hero { padding-top: 22px; }
+
+@media (max-width: 600px) {
+  .advent-stats { flex-wrap: wrap; gap: 10px 14px; }
+  .account-btn { margin-left: auto; }
+}
