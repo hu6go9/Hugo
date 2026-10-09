@@ -1,9 +1,19 @@
 /* ==========================================================
-   Calendrier de l'avent 2026 — Ligue 1 McDonald's (prototype)
+   Les Étoiles de la Ligue 1 McDonald's — saison 2 (avent 2026)
+   Prototype : calendrier + lecteur story 3 pages, comme les stories 2025
+   (couverture → étoile révélée → contenu / CTA).
    ========================================================== */
 
 const ADVENT_STORAGE_KEY = "l1-advent-2026-v1";
 const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const L1_LOGO = "assets/logos/competitions/ligue1-mcdonalds.png";
+
+// Pages d'une étoile. duration = défilement auto (ms) ; null = page interactive, pas de chrono.
+const STORY_PAGES = [
+  { id: "cover", duration: 8000 },
+  { id: "reveal", duration: 4000 },
+  { id: "content", duration: null },
+];
 
 const advent = {
   opened: {}, // day -> true
@@ -58,6 +68,15 @@ function isAvailable(day) {
   return day <= currentDay();
 }
 
+// Prochaine étoile accessible pas encore ouverte (pour enchaîner comme des stories).
+function nextUnopened(afterDay) {
+  const max = Math.min(currentDay(), 24);
+  for (let d = 1; d <= max; d++) {
+    if (d !== afterDay && !advent.opened[d]) return d;
+  }
+  return null;
+}
+
 // ---------------- Score ----------------
 function computeStats() {
   const openedCount = Object.keys(advent.opened).length;
@@ -66,7 +85,7 @@ function computeStats() {
   for (const [day, choice] of Object.entries(advent.quiz)) {
     if (dayData(Number(day)).answer === choice) points += ADVENT_POINTS.quizCorrect;
   }
-  // Série : jours consécutifs ouverts jusqu'à aujourd'hui (hier si la case du jour attend encore).
+  // Série : jours consécutifs ouverts jusqu'à aujourd'hui (hier si l'étoile du jour attend encore).
   const today = Math.min(currentDay(), 24);
   let d = advent.opened[today] ? today : today - 1;
   let streak = 0;
@@ -81,7 +100,30 @@ function renderStats() {
   document.getElementById("stat-points").textContent = points;
 }
 
-// ---------------- Compte à rebours ----------------
+// ---------------- Étoile (SVG) ----------------
+function starPoints(cx, cy, outer, inner) {
+  const pts = [];
+  for (let i = 0; i < 10; i++) {
+    const r = i % 2 === 0 ? outer : inner;
+    const a = -Math.PI / 2 + (i * Math.PI) / 5;
+    pts.push(`${(cx + r * Math.cos(a)).toFixed(2)},${(cy + r * Math.sin(a)).toFixed(2)}`);
+  }
+  return pts.join(" ");
+}
+const STAR_OUTER = starPoints(50, 54, 46, 20);
+const STAR_INNER = starPoints(50, 54, 38, 16.5);
+
+// Le dégradé or (#gold) est défini une seule fois dans advent.html.
+function starSVG(day) {
+  return `
+    <svg class="star" viewBox="0 0 100 100" aria-hidden="true">
+      <polygon class="star-outer" points="${STAR_OUTER}" />
+      <polygon class="star-inner" points="${STAR_INNER}" />
+      <text class="star-num" x="50" y="57">${day}</text>
+    </svg>`;
+}
+
+// ---------------- Compte à rebours + CTA du hero ----------------
 let countdownTimer = null;
 
 function pad(n) { return String(n).padStart(2, "0"); }
@@ -97,6 +139,13 @@ function countdownBlocks(ms) {
   return parts.map(([v, u]) => `<span class="cd-block"><b>${pad(v)}</b><small>${u}</small></span>`).join("");
 }
 
+function renderHeroCta() {
+  const btn = document.getElementById("hero-cta");
+  const day = currentDay();
+  btn.hidden = day < 1 || day > 24;
+  if (!btn.hidden) btn.textContent = advent.opened[day] ? "Revoir l'étoile du jour" : "Ouvrir l'étoile du jour";
+}
+
 function renderCountdown() {
   const el = document.getElementById("countdown");
   const day = currentDay();
@@ -105,38 +154,38 @@ function renderCountdown() {
 
   if (day === 0) {
     const target = new Date(ADVENT_YEAR, 11, 1);
-    const tick = () => { el.innerHTML = `<span class="cd-label">Première case dans</span><span class="cd-row">${countdownBlocks(target - new Date())}</span>`; };
+    const tick = () => { el.innerHTML = `<span class="cd-label">Première étoile dans</span><span class="cd-row">${countdownBlocks(target - new Date())}</span>`; };
     if (live) { tick(); countdownTimer = setInterval(tick, 1000); }
-    else el.innerHTML = `<span class="cd-label">Ouverture de la première case le 1er décembre</span>`;
+    else el.innerHTML = `<span class="cd-label">Première étoile le 1er décembre</span>`;
   } else if (day === 25) {
     el.innerHTML = `<span class="cd-label">C'est fini pour cette année. Les contenus restent dispo, rendez-vous en 2027 !</span>`;
   } else if (day === 24) {
-    el.innerHTML = `<span class="cd-label">Dernière case : le gros lot t'attend. Joyeux Noël !</span>`;
+    el.innerHTML = `<span class="cd-label">Dernière étoile : le gros lot t'attend. Joyeux Noël !</span>`;
   } else if (live) {
     const tick = () => {
       const now = new Date();
       const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-      el.innerHTML = `<span class="cd-label">Case n°${day + 1} dans</span><span class="cd-row">${countdownBlocks(midnight - now)}</span>`;
+      el.innerHTML = `<span class="cd-label">Étoile n°${day + 1} dans</span><span class="cd-row">${countdownBlocks(midnight - now)}</span>`;
     };
     tick();
     countdownTimer = setInterval(tick, 1000);
   } else {
-    el.innerHTML = `<span class="cd-label">Case n°${day + 1} demain, le ${day + 1} décembre</span>`;
+    el.innerHTML = `<span class="cd-label">Étoile n°${day + 1} demain, le ${day + 1} décembre</span>`;
   }
 }
 
 // ---------------- Grille ----------------
-function doorState(day) {
+function tileState(day) {
   if (advent.opened[day]) return "opened";
   if (!isAvailable(day)) return "locked";
   return day === currentDay() ? "today" : "missed";
 }
 
-function doorAriaLabel(day, state) {
+function tileAriaLabel(day, state) {
   const entry = dayData(day);
-  if (state === "locked") return `Case ${day}, s'ouvre le ${day} décembre`;
-  if (state === "opened") return `Case ${day}, ouverte : ${ADVENT_TYPES[entry.type].label}, ${entry.title}`;
-  return `Case ${day}, à ouvrir${state === "today" ? " aujourd'hui" : ""}`;
+  if (state === "locked") return `Étoile ${day}, s'ouvre le ${day} décembre`;
+  if (state === "opened") return `Étoile ${day}, ouverte : ${ADVENT_TYPES[entry.type].label}, ${entry.title}`;
+  return `Étoile ${day}, à ouvrir${state === "today" ? " aujourd'hui" : ""}`;
 }
 
 function renderGrid() {
@@ -145,97 +194,155 @@ function renderGrid() {
   for (const day of ADVENT_LAYOUT) {
     const entry = dayData(day);
     const club = clubOf(entry);
-    const state = doorState(day);
-    const door = document.createElement("button");
-    door.type = "button";
-    door.className = `door state-${state} type-${entry.type}${entry.big ? " door-big" : ""}`;
-    door.dataset.day = day;
-    door.style.setProperty("--club", club ? club.color : "var(--blue)");
-    door.setAttribute("aria-label", doorAriaLabel(day, state));
+    const state = tileState(day);
+    const tile = document.createElement("button");
+    tile.type = "button";
+    tile.className = `star-tile state-${state} type-${entry.type}${entry.big ? " tile-big" : ""}`;
+    tile.dataset.day = day;
+    tile.setAttribute("aria-label", tileAriaLabel(day, state));
 
-    const crest = club ? club.logo : "assets/logos/competitions/ligue1-mcdonalds.png";
     let tag = "";
-    if (state === "today") tag = `<span class="door-tag">Aujourd'hui</span>`;
-    else if (state === "missed") tag = `<span class="door-tag door-tag-soft">À rattraper</span>`;
-    else if (state === "locked") tag = `<span class="door-lock" aria-hidden="true">🔒</span>`;
+    if (state === "today") tag = `<span class="tile-tag">Aujourd'hui</span>`;
+    else if (state === "missed") tag = `<span class="tile-tag tile-tag-soft">À rattraper</span>`;
+    else if (state === "locked") tag = `<span class="tile-lock" aria-hidden="true">🔒</span>`;
 
-    door.innerHTML = `
-      <span class="door-inner" aria-hidden="true">
-        <img class="door-crest" src="${crest}" alt="" loading="lazy" />
-        <span class="door-type">${ADVENT_TYPES[entry.type].icon} ${ADVENT_TYPES[entry.type].label}</span>
-        <span class="door-title">${esc(entry.title)}</span>
-      </span>
-      <span class="door-front" aria-hidden="true">
-        <span class="door-num">${day}</span>
-        <span class="door-month">déc.</span>
-        ${tag}
-      </span>`;
-    door.addEventListener("click", () => onDoorClick(day, door));
-    grid.appendChild(door);
+    const caption = state === "opened"
+      ? `${ADVENT_TYPES[entry.type].icon} ${esc(entry.title)}`
+      : "Les Étoiles";
+    const crest = state === "opened" ? `<img class="tile-crest" src="${club ? club.logo : L1_LOGO}" alt="" loading="lazy" />` : "";
+
+    tile.innerHTML = `${starSVG(day)}${crest}${tag}<span class="tile-caption" aria-hidden="true">${caption}</span>`;
+    tile.addEventListener("click", () => onTileClick(day, tile));
+    grid.appendChild(tile);
   }
 }
 
-function onDoorClick(day, door) {
+function onTileClick(day, tile) {
   if (!isAvailable(day)) {
-    door.classList.remove("shake");
-    void door.offsetWidth; // relance l'animation
-    door.classList.add("shake");
-    toast(`Patience ! Cette case s'ouvre le ${day} décembre.`);
+    tile.classList.remove("shake");
+    void tile.offsetWidth; // relance l'animation
+    tile.classList.add("shake");
+    toast(`Patience ! Cette étoile s'ouvre le ${day} décembre.`);
     return;
   }
-  if (advent.opened[day]) { openModal(day); return; }
+  // Depuis la grille, on saute la couverture : on arrive direct sur l'étoile révélée
+  // (ou sur le contenu si elle est déjà ouverte).
+  openStory(day, advent.opened[day] ? 2 : 1);
+}
 
+// ---------------- Lecteur story ----------------
+const story = { day: null, index: 0, timer: null, lastFocus: null };
+
+function openStory(day, startIndex = 0) {
+  const el = document.getElementById("story");
+  if (el.hidden) story.lastFocus = document.activeElement;
+  story.day = day;
   advent.opened[day] = true;
   saveAdvent();
   renderStats();
-  door.className = door.className.replace(/state-\w+/, "state-opened") + " opening";
-  door.setAttribute("aria-label", doorAriaLabel(day, "opened"));
-  setTimeout(() => openModal(day), REDUCED_MOTION ? 0 : 750);
-}
-
-// ---------------- Fenêtre de contenu ----------------
-let lastFocus = null;
-let modalDay = null;
-
-function openModal(day) {
-  const entry = dayData(day);
-  const club = clubOf(entry);
-  const body = document.getElementById("modal-body");
-  const modal = document.getElementById("modal");
-  const type = ADVENT_TYPES[entry.type];
-
-  modal.style.setProperty("--club", club ? club.color : "var(--blue)");
-  body.innerHTML = `
-    <div class="modal-head">
-      <img class="modal-crest" src="${club ? club.logo : "assets/logos/competitions/ligue1-mcdonalds.png"}" alt="${club ? esc(club.name) : "Ligue 1 McDonald's"}" />
-      <div>
-        <p class="modal-kicker">${day} décembre · ${type.icon} ${type.label}</p>
-        <h2 id="modal-title">${esc(entry.title)}</h2>
-      </div>
-    </div>
-    <div class="modal-content">${renderContent(entry, club)}</div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost" type="button" data-action="share">Partager</button>
-    </div>`;
-  bindContent(entry, club, body);
-
-  if (modal.hidden) lastFocus = document.activeElement;
-  modalDay = day;
-  modal.hidden = false;
+  el.hidden = false;
   document.body.classList.add("modal-open");
-  document.getElementById("modal-close").focus();
   history.replaceState(null, "", urlWith({ case: day }));
+  showPage(startIndex);
+  document.getElementById("story-close").focus();
 }
 
-function closeModal() {
-  const modal = document.getElementById("modal");
-  if (modal.hidden) return;
-  modal.hidden = true;
+function closeStory() {
+  const el = document.getElementById("story");
+  if (el.hidden) return;
+  clearTimeout(story.timer);
+  el.hidden = true;
   document.body.classList.remove("modal-open");
   history.replaceState(null, "", urlWith({ case: null }));
   renderGrid();
-  const door = document.querySelector(`.door[data-day="${modalDay}"]`);
-  (door || lastFocus)?.focus?.();
+  renderHeroCta();
+  const tile = document.querySelector(`.star-tile[data-day="${story.day}"]`);
+  (tile || story.lastFocus)?.focus?.();
+}
+
+function storyNext() {
+  if (story.index < STORY_PAGES.length - 1) { showPage(story.index + 1); return; }
+  const next = nextUnopened(story.day);
+  if (next) openStory(next, 1);
+  else closeStory();
+}
+
+function storyPrev() {
+  if (story.index > 0) showPage(story.index - 1);
+}
+
+function showPage(index) {
+  clearTimeout(story.timer);
+  story.index = index;
+  const page = STORY_PAGES[index];
+  const entry = dayData(story.day);
+  const club = clubOf(entry);
+  const el = document.getElementById("story");
+  el.style.setProperty("--club", club ? club.color : "#085FFF");
+  el.querySelector(".story").setAttribute("aria-label", `Les Étoiles, ${story.day} décembre`);
+  document.getElementById("story-day").textContent = `${story.day} déc.`;
+
+  // Barres de progression
+  document.getElementById("story-progress").innerHTML = STORY_PAGES.map((p, i) => {
+    let cls = "seg";
+    if (i < index || (i === index && !p.duration)) cls += " done";
+    else if (i === index) cls += " running";
+    const style = i === index && p.duration ? ` style="animation-duration:${p.duration}ms"` : "";
+    return `<span class="${cls}"><span class="seg-fill"${style}></span></span>`;
+  }).join("");
+
+  const stage = document.getElementById("story-stage");
+  stage.className = `story-stage page-${page.id}`;
+  if (page.id === "cover") stage.innerHTML = renderCover(entry);
+  else if (page.id === "reveal") stage.innerHTML = renderReveal(entry);
+  else stage.innerHTML = renderContentPage(entry, club);
+  bindPage(entry, club, stage);
+
+  // Zones de tap gauche/droite uniquement sur les pages non interactives
+  document.querySelectorAll(".story-tap").forEach((z) => { z.hidden = !page.duration; });
+
+  if (page.duration) story.timer = setTimeout(storyNext, page.duration);
+}
+
+function renderCover(entry) {
+  const label = entry.day === currentDay() ? "Ouvrir l'étoile du jour" : `Ouvrir l'étoile n°${entry.day}`;
+  return `
+    <div class="cover-bg" aria-hidden="true"></div>
+    <div class="cover-title">
+      <span class="cover-les">Les</span>
+      <span class="cover-etoiles gold-text">Étoiles</span>
+      <span class="cover-dela">de la</span>
+      <img class="cover-logo" src="${L1_LOGO}" alt="Ligue 1 McDonald's" />
+    </div>
+    <p class="cover-date">${entry.day} décembre ${ADVENT_YEAR}</p>
+    <button class="btn cover-cta" type="button" data-action="next">${label}</button>`;
+}
+
+function renderReveal(entry) {
+  return `
+    <div class="reveal-star">${starSVG(entry.day)}</div>
+    <p class="reveal-cap">${ADVENT_TYPES[entry.type].icon} ${ADVENT_TYPES[entry.type].label}</p>`;
+}
+
+function renderContentPage(entry, club) {
+  const type = ADVENT_TYPES[entry.type];
+  const next = nextUnopened(entry.day);
+  return `
+    <div class="content-scroll">
+      <div class="content-head">
+        <img class="content-crest" src="${club ? club.logo : L1_LOGO}" alt="${club ? esc(club.name) : "Ligue 1 McDonald's"}" />
+        <div>
+          <p class="content-kicker">Étoile n°${entry.day} · ${type.icon} ${type.label}</p>
+          <h2 id="story-title">${esc(entry.title)}</h2>
+        </div>
+      </div>
+      <div class="content-body">${renderContent(entry, club)}</div>
+    </div>
+    <div class="content-foot">
+      <button class="btn btn-ghost" type="button" data-action="prev" aria-label="Revoir l'étoile">‹</button>
+      <button class="btn btn-ghost" type="button" data-action="share">Partager</button>
+      <button class="btn btn-ghost" type="button" data-action="next">${next ? `Étoile n°${next} ›` : "Terminer"}</button>
+    </div>`;
 }
 
 function renderContent(entry, club) {
@@ -262,7 +369,7 @@ function renderContent(entry, club) {
         return `<button class="${cls}" type="button" data-answer="${i}" ${answered ? "disabled" : ""}>${esc(o)}</button>`;
       }).join("");
       const feedback = answered
-        ? `<p class="quiz-feedback ${chosen === entry.answer ? "ok" : "ko"}">${chosen === entry.answer ? `Bien joué, +${ADVENT_POINTS.quizCorrect} points !` : "Raté, ce sera pour la prochaine !"} ${esc(entry.explain)}</p>`
+        ? `<p class="quiz-feedback">${chosen === entry.answer ? `Bien joué, +${ADVENT_POINTS.quizCorrect} points !` : "Raté, ce sera pour la prochaine !"} ${esc(entry.explain)}</p>`
         : `<p class="meta">Une seule tentative. Bonne réponse = +${ADVENT_POINTS.quizCorrect} points.</p>`;
       return `<p class="quiz-question">${esc(entry.question)}</p><div class="quiz-opts">${opts}</div>${feedback}`;
     }
@@ -292,22 +399,24 @@ function renderContent(entry, club) {
   return "";
 }
 
-function bindContent(entry, club, root) {
-  root.querySelector('[data-action="share"]').addEventListener("click", () => shareDay(entry));
+function bindPage(entry, club, root) {
+  root.querySelectorAll('[data-action="next"]').forEach((b) => b.addEventListener("click", storyNext));
+  root.querySelector('[data-action="prev"]')?.addEventListener("click", storyPrev);
+  root.querySelector('[data-action="share"]')?.addEventListener("click", () => shareDay(entry));
 
   root.querySelector('[data-action="participate"]')?.addEventListener("click", () => {
     advent.lots[entry.day] = true;
     saveAdvent();
     renderStats();
     toast(`Participation enregistrée, +${ADVENT_POINTS.lotEntry} points. Bonne chance !`);
-    openModal(entry.day);
+    showPage(story.index);
   });
 
   root.querySelectorAll("[data-answer]").forEach((btn) => btn.addEventListener("click", () => {
     advent.quiz[entry.day] = Number(btn.dataset.answer);
     saveAdvent();
     renderStats();
-    openModal(entry.day);
+    showPage(story.index);
   }));
 
   root.querySelector('[data-action="copy"]')?.addEventListener("click", async () => {
@@ -332,9 +441,9 @@ function bindContent(entry, club, root) {
 
 async function shareDay(entry) {
   const url = location.origin + location.pathname + `?case=${entry.day}`;
-  const text = `Case n°${entry.day} du calendrier de l'avent Ligue 1 McDonald's : ${entry.title}`;
+  const text = `Étoile n°${entry.day} — Les Étoiles de la Ligue 1 McDonald's : ${entry.title}`;
   try {
-    if (navigator.share) { await navigator.share({ title: "Calendrier de l'avent Ligue 1 McDonald's", text, url }); return; }
+    if (navigator.share) { await navigator.share({ title: "Les Étoiles de la Ligue 1 McDonald's", text, url }); return; }
     await navigator.clipboard.writeText(`${text} ${url}`);
     toast("Lien copié, à toi de le partager !");
   } catch (e) {
@@ -352,46 +461,72 @@ function loadImage(src) {
   });
 }
 
+function goldGradient(ctx, x0, y0, x1, y1) {
+  const g = ctx.createLinearGradient(x0, y0, x1, y1);
+  g.addColorStop(0, "#FBE7A1");
+  g.addColorStop(0.35, "#E2B24F");
+  g.addColorStop(0.6, "#9C6A1E");
+  g.addColorStop(1, "#F3D27C");
+  return g;
+}
+
 async function paintWallpaper(ctx, w, h, club) {
-  const color = club ? club.color : "#085FFF";
-  ctx.fillStyle = "#262626";
+  // Fond bleu électrique façon stories "Les Étoiles"
+  ctx.fillStyle = "#0647C9";
   ctx.fillRect(0, 0, w, h);
-  const glow = ctx.createRadialGradient(w / 2, h * 0.42, 0, w / 2, h * 0.42, w * 0.9);
-  glow.addColorStop(0, color + "cc");
-  glow.addColorStop(1, "#26262600");
+  const glow = ctx.createRadialGradient(w * 0.4, h * 0.3, 0, w * 0.4, h * 0.3, w * 1.1);
+  glow.addColorStop(0, "#3B86FF");
+  glow.addColorStop(1, "#0647C900");
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, w, h);
 
   // Flocons fixes (graine stable pour un rendu identique à chaque export)
   const rng = mulberry32(2026);
-  ctx.fillStyle = "rgba(255,255,255,0.7)";
+  ctx.fillStyle = "rgba(255,255,255,0.6)";
   for (let i = 0; i < 90; i++) {
     ctx.beginPath();
     ctx.arc(rng() * w, rng() * h, (rng() * 2 + 0.6) * (w / 540), 0, Math.PI * 2);
     ctx.fill();
   }
 
-  const crest = await loadImage(club ? club.logo : "assets/logos/competitions/ligue1-mcdonalds.png");
+  // Étoile dorée
+  const cx = w / 2, cy = h * 0.42, R = w * 0.44;
+  ctx.beginPath();
+  for (let i = 0; i < 10; i++) {
+    const r = i % 2 === 0 ? R : R * 0.43;
+    const a = -Math.PI / 2 + (i * Math.PI) / 5;
+    ctx.lineTo(cx + r * Math.cos(a), cy + r * Math.sin(a));
+  }
+  ctx.closePath();
+  ctx.lineJoin = "round";
+  ctx.lineWidth = w * 0.035;
+  ctx.strokeStyle = goldGradient(ctx, cx - R, cy - R, cx + R, cy + R);
+  ctx.shadowColor = "rgba(0,0,0,0.45)";
+  ctx.shadowBlur = w * 0.03;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  const crest = await loadImage(club ? club.logo : L1_LOGO);
   if (crest) {
-    const size = w * 0.42;
+    const size = w * 0.26;
     const ratio = crest.width / crest.height;
     const cw = ratio >= 1 ? size : size * ratio;
     const ch = ratio >= 1 ? size / ratio : size;
-    ctx.drawImage(crest, (w - cw) / 2, h * 0.42 - ch / 2, cw, ch);
+    ctx.drawImage(crest, cx - cw / 2, cy + R * 0.12 - ch / 2, cw, ch);
   }
 
-  ctx.fillStyle = "#FFFFFF";
   ctx.textAlign = "center";
-  ctx.font = `700 ${w * 0.13}px "Insatiable Display Compressed", sans-serif`;
-  ctx.fillText("JOYEUX NOËL", w / 2, h * 0.72);
+  ctx.font = `700 ${w * 0.14}px "Insatiable Display Compressed", sans-serif`;
+  ctx.fillStyle = goldGradient(ctx, 0, h * 0.68, 0, h * 0.75);
+  ctx.fillText("JOYEUX NOËL", w / 2, h * 0.74);
   ctx.font = `400 ${w * 0.045}px "GT America", sans-serif`;
-  ctx.fillStyle = "rgba(255,255,255,0.75)";
-  ctx.fillText("Calendrier de l'avent 2026", w / 2, h * 0.77);
+  ctx.fillStyle = "rgba(255,255,255,0.85)";
+  ctx.fillText("Les Étoiles de la Ligue 1 McDonald's", w / 2, h * 0.79);
 
-  const logo = await loadImage("assets/logos/competitions/ligue1-mcdonalds.png");
+  const logo = await loadImage(L1_LOGO);
   if (logo && club) {
     const lw = w * 0.16;
-    ctx.drawImage(logo, (w - lw) / 2, h * 0.86, lw, lw * (logo.height / logo.width));
+    ctx.drawImage(logo, (w - lw) / 2, h * 0.87, lw, lw * (logo.height / logo.width));
   }
 }
 
@@ -407,7 +542,7 @@ async function downloadWallpaper(club) {
   try {
     const a = document.createElement("a");
     a.href = canvas.toDataURL("image/png");
-    a.download = `fond-ecran-noel-ligue1-${club ? club.id : "l1"}.png`;
+    a.download = `fond-ecran-les-etoiles-${club ? club.id : "l1"}.png`;
     a.click();
   } catch (e) {
     // Canvas "taché" quand la page est ouverte en file:// : il faut la servir en http.
@@ -514,6 +649,7 @@ function refresh() {
   renderGrid();
   renderStats();
   renderCountdown();
+  renderHeroCta();
 }
 
 // ---------------- Init ----------------
@@ -522,15 +658,18 @@ initDemo();
 refresh();
 startSnow();
 
-document.getElementById("modal-close").addEventListener("click", closeModal);
-document.getElementById("modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+document.getElementById("hero-cta").addEventListener("click", () => openStory(currentDay(), 0));
+document.getElementById("story-close").addEventListener("click", closeStory);
+document.getElementById("story-prev").addEventListener("click", storyPrev);
+document.getElementById("story-next").addEventListener("click", storyNext);
+document.getElementById("story").addEventListener("click", (e) => { if (e.target.id === "story") closeStory(); });
+document.addEventListener("keydown", (e) => {
+  if (document.getElementById("story").hidden) return;
+  if (e.key === "Escape") closeStory();
+  else if (e.key === "ArrowRight") storyNext();
+  else if (e.key === "ArrowLeft") storyPrev();
+});
 
-// Lien direct vers une case (?case=12) : on ouvre si elle est déjà accessible.
+// Lien partagé (?case=12) : la story démarre sur la couverture, comme en 2025.
 const sharedCase = Number(new URLSearchParams(location.search).get("case"));
-if (sharedCase >= 1 && sharedCase <= 24 && isAvailable(sharedCase)) {
-  advent.opened[sharedCase] = true;
-  saveAdvent();
-  refresh();
-  openModal(sharedCase);
-}
+if (sharedCase >= 1 && sharedCase <= 24 && isAvailable(sharedCase)) openStory(sharedCase, 0);

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Calendrier de l'avent 2026 — Ligue 1 McDonald's</title>
+<title>Les Étoiles de la Ligue 1 McDonald's — Avent 2026</title>
 <link rel="stylesheet" href="css/styles.css" />
 <link rel="stylesheet" href="css/advent.css" />
 </head>
@@ -11,16 +11,28 @@
 
 <canvas class="snow" id="snow" aria-hidden="true"></canvas>
 
+<!-- Dégradé or partagé par toutes les étoiles SVG -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FBE7A1" />
+      <stop offset="0.35" stop-color="#E2B24F" />
+      <stop offset="0.6" stop-color="#9C6A1E" />
+      <stop offset="1" stop-color="#F3D27C" />
+    </linearGradient>
+  </defs>
+</svg>
+
 <header class="topbar">
   <div class="brand">
     <img class="brand-logo" src="assets/logos/competitions/ligue1-mcdonalds.png" alt="Ligue 1 McDonald's" />
     <span>
-      Calendrier de l'avent
-      <small>Prototype — contenus fictifs</small>
+      Les Étoiles
+      <small>Calendrier de l'avent 2026 — prototype</small>
     </span>
   </div>
   <div class="advent-stats" aria-label="Ta progression">
-    <div class="stat"><span class="stat-value" id="stat-opened">0</span><span class="stat-label">/24 cases</span></div>
+    <div class="stat"><span class="stat-value" id="stat-opened">0</span><span class="stat-label">/24 étoiles</span></div>
     <div class="stat"><span class="stat-value" id="stat-streak">0</span><span class="stat-label">jours de série</span></div>
     <div class="stat stat-points"><span class="stat-value" id="stat-points">0</span><span class="stat-label">points</span></div>
   </div>
@@ -28,9 +40,14 @@
 
 <main>
   <section class="advent-hero">
-    <p class="hero-kicker">Édition 2026</p>
-    <h1>24 jours.<br /><span>24 surprises.</span></h1>
-    <p class="hero-sub">Chaque jour de décembre, une case s'ouvre : lots à gagner, contenus exclusifs, quiz et codes promo partenaires.</p>
+    <p class="hero-kicker">Saison 2 · Décembre 2026</p>
+    <h1 class="hero-title">
+      <span class="hero-les">Les</span>
+      <span class="hero-etoiles gold-text">Étoiles</span>
+      <span class="hero-dela">de la Ligue 1 McDonald's</span>
+    </h1>
+    <p class="hero-sub">Chaque jour jusqu'à Noël, une étoile s'allume : lots à gagner, contenus exclusifs, quiz et codes promo partenaires.</p>
+    <button class="btn hero-cta" id="hero-cta" type="button" hidden>Ouvrir l'étoile du jour</button>
     <div class="countdown" id="countdown" aria-live="polite"></div>
   </section>
 
@@ -41,14 +58,21 @@
     <span class="legend-item" data-type="promo">% Code promo</span>
   </div>
 
-  <section class="advent-grid" id="advent-grid" aria-label="Les 24 cases du calendrier"></section>
+  <section class="advent-grid" id="advent-grid" aria-label="Les 24 étoiles du calendrier"></section>
 </main>
 
-<!-- Fenêtre de contenu d'une case -->
-<div class="modal-backdrop" id="modal" hidden>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-    <button class="modal-close" id="modal-close" type="button" aria-label="Fermer">✕</button>
-    <div class="modal-body" id="modal-body"></div>
+<!-- Lecteur story : couverture → étoile révélée → contenu (format des stories 2025) -->
+<div class="story-backdrop" id="story" hidden>
+  <div class="story" role="dialog" aria-modal="true">
+    <div class="story-progress" id="story-progress"></div>
+    <div class="story-top">
+      <img src="assets/logos/competitions/ligue1-mcdonalds.png" alt="" />
+      <span>Les Étoiles · <span id="story-day"></span></span>
+      <button class="story-close" id="story-close" type="button" aria-label="Fermer">✕</button>
+    </div>
+    <div class="story-stage" id="story-stage"></div>
+    <button class="story-tap story-tap-prev" id="story-prev" type="button" aria-label="Page précédente"></button>
+    <button class="story-tap story-tap-next" id="story-next" type="button" aria-label="Page suivante"></button>
   </div>
 </div>
 
