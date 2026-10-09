@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Calendrier de l'avent 2026 — Ligue 1 McDonald's</title>
+<link rel="stylesheet" href="css/styles.css" />
+<link rel="stylesheet" href="css/advent.css" />
+</head>
+<body class="advent">
+
+<canvas class="snow" id="snow" aria-hidden="true"></canvas>
+
+<header class="topbar">
+  <div class="brand">
+    <img class="brand-logo" src="assets/logos/competitions/ligue1-mcdonalds.png" alt="Ligue 1 McDonald's" />
+    <span>
+      Calendrier de l'avent
+      <small>Prototype — contenus fictifs</small>
+    </span>
+  </div>
+  <div class="advent-stats" aria-label="Ta progression">
+    <div class="stat"><span class="stat-value" id="stat-opened">0</span><span class="stat-label">/24 cases</span></div>
+    <div class="stat"><span class="stat-value" id="stat-streak">0</span><span class="stat-label">jours de série</span></div>
+    <div class="stat stat-points"><span class="stat-value" id="stat-points">0</span><span class="stat-label">points</span></div>
+  </div>
+</header>
+
+<main>
+  <section class="advent-hero">
+    <p class="hero-kicker">Édition 2026</p>
+    <h1>24 jours.<br /><span>24 surprises.</span></h1>
+    <p class="hero-sub">Chaque jour de décembre, une case s'ouvre : lots à gagner, contenus exclusifs, quiz et codes promo partenaires.</p>
+    <div class="countdown" id="countdown" aria-live="polite"></div>
+  </section>
+
+  <div class="advent-legend" aria-label="Types de cases">
+    <span class="legend-item" data-type="lot">🎁 À gagner</span>
+    <span class="legend-item" data-type="exclusif">▶ Exclusif</span>
+    <span class="legend-item" data-type="quiz">? Quiz</span>
+    <span class="legend-item" data-type="promo">% Code promo</span>
+  </div>
+
+  <section class="advent-grid" id="advent-grid" aria-label="Les 24 cases du calendrier"></section>
+</main>
+
+<!-- Fenêtre de contenu d'une case -->
+<div class="modal-backdrop" id="modal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="modal-close" id="modal-close" type="button" aria-label="Fermer">✕</button>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Barre de démo : simule un jour de décembre (le proto est présenté avant le 1er décembre) -->
+<div class="demo-bar">
+  <label for="demo-day">Mode démo</label>
+  <select id="demo-day"></select>
+  <button class="btn btn-ghost" id="demo-reset" type="button">Réinitialiser</button>
+</div>
+
+<footer class="credit">Prototype LFP Media — lots, codes et contenus fictifs, à valider (marketing, partenaires, règlement du jeu).</footer>
+
+<script src="js/data.js"></script>
+<script src="js/advent-data.js"></script>
+<script src="js/advent.js"></script>
+</body>
+</html>

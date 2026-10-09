@@ -1,0 +1,307 @@
+/*
+ * Calendrier de l'avent 2026 — s'appuie sur les tokens et polices de styles.css.
+ * Touche saisonnière : --or, réservé aux halos (case du jour, grandes cases).
+ * Hors palette officielle → à valider avec la marque avant mise en ligne.
+ */
+
+:root {
+  --or: #e8c46a;
+  --or-glow: rgba(232, 196, 106, 0.45);
+}
+
+body.advent {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(8, 95, 255, 0.28), transparent 70%),
+    var(--charbon);
+  padding-bottom: 72px; /* place pour la barre de démo */
+}
+body.modal-open { overflow: hidden; }
+
+.snow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.advent main, .advent header.topbar { position: relative; z-index: 2; }
+.advent header.topbar { background: rgba(38, 38, 38, 0.85); backdrop-filter: blur(8px); }
+
+/* ---- Compteurs ---- */
+.advent-stats { display: flex; gap: 18px; }
+.stat { display: flex; align-items: baseline; gap: 5px; }
+.stat-value { font-family: var(--font-mono); font-weight: 700; font-size: 1.15rem; }
+.stat-label { font-size: 0.72rem; color: var(--text-dim); }
+.stat-points .stat-value { color: var(--pink); }
+
+/* ---- Hero ---- */
+.advent-hero {
+  text-align: center;
+  padding: 40px 16px 28px;
+  border-radius: var(--radius);
+  background: url("../assets/brand/patterns/pattern-dark-on-black.webp") center / cover;
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.hero-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--or);
+  margin: 0 0 8px;
+}
+.advent-hero h1 {
+  font-family: "Insatiable Display Compressed", var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.6rem, 8vw, 5rem);
+  line-height: 0.92;
+  text-transform: uppercase;
+  margin: 0 0 14px;
+}
+.advent-hero h1 span { color: var(--blue); -webkit-text-stroke: 1px #fff; }
+.hero-sub { max-width: 560px; margin: 0 auto 22px; color: var(--text-dim); font-size: 0.95rem; line-height: 1.45; }
+
+.countdown { display: flex; flex-direction: column; align-items: center; gap: 10px; min-height: 30px; }
+.cd-label { font-size: 0.85rem; font-weight: 700; }
+.cd-row { display: flex; gap: 8px; }
+.cd-block {
+  display: flex; flex-direction: column; align-items: center;
+  min-width: 58px; padding: 8px 6px;
+  background: var(--charbon); border: 1px solid var(--border); border-radius: var(--radius-sm);
+}
+.cd-block b { font-family: var(--font-mono); font-size: 1.5rem; }
+.cd-block small { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; }
+
+/* ---- Légende ---- */
+.advent-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 18px; }
+.legend-item {
+  font-size: 0.75rem; font-weight: 700;
+  padding: 5px 11px; border-radius: 999px;
+  background: var(--charbon-light); border: 1px solid var(--border);
+}
+
+/* ---- Grille des cases ---- */
+.advent-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-auto-rows: 1fr;
+  grid-auto-flow: dense;
+  gap: 12px;
+}
+@media (max-width: 900px) { .advent-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 520px) { .advent-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; } }
+
+.door {
+  position: relative;
+  aspect-ratio: 1;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  perspective: 900px;
+  border-radius: var(--radius);
+}
+.door-big { grid-column: span 2; grid-row: span 2; }
+.door:focus-visible { outline: 3px solid var(--pink); outline-offset: 3px; }
+
+.door-front, .door-inner {
+  position: absolute; inset: 0;
+  border-radius: var(--radius);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+
+/* Face avant : la porte fermée */
+.door-front {
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.07), transparent 45%),
+    var(--charbon-light);
+  border: 1px solid var(--border);
+  transform-origin: left center;
+  transition: transform 0.7s cubic-bezier(0.6, 0.05, 0.3, 1), border-color 0.2s, opacity 0.3s 0.4s;
+  backface-visibility: hidden;
+  z-index: 2;
+}
+.door-num {
+  font-family: "Insatiable Display Compressed", var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  line-height: 1;
+}
+.door-big .door-num { font-size: clamp(4rem, 10vw, 7rem); }
+.door-month { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; }
+
+.door-tag {
+  position: absolute; bottom: 8px;
+  font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
+  padding: 3px 7px; border-radius: 999px;
+  background: var(--pink); color: var(--charbon);
+}
+.door-tag-soft { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
+.door-lock { position: absolute; top: 8px; right: 9px; font-size: 0.7rem; opacity: 0.6; }
+
+/* Face intérieure : ce que révèle la case */
+.door-inner {
+  gap: 6px; padding: 10px;
+  background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--club) 55%, transparent), var(--charbon) 75%);
+  border: 1px solid color-mix(in srgb, var(--club) 60%, var(--border));
+  text-align: center;
+}
+.door-crest { width: 42%; max-height: 42%; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5)); }
+.door-type { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: var(--text-dim); }
+.door-title { font-size: 0.72rem; font-weight: 700; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.door-big .door-title { font-size: 0.95rem; }
+.door-big .door-type { font-size: 0.72rem; }
+
+/* États */
+.state-locked .door-front { opacity: 0.55; }
+.state-locked { cursor: not-allowed; }
+.state-locked .door-inner { visibility: hidden; }
+.state-missed .door-front:hover, .state-today .door-front:hover { border-color: var(--blue); }
+.state-today .door-front {
+  border: 2px solid var(--or);
+  box-shadow: 0 0 0 0 var(--or-glow);
+  animation: pulse 2.2s ease-out infinite;
+}
+.door-big:not(.state-opened) .door-front { background: linear-gradient(160deg, rgba(8, 95, 255, 0.35), transparent 60%), var(--charbon-light); }
+
+.state-opened .door-front { transform: rotateY(-105deg); opacity: 0; pointer-events: none; }
+.state-opened:not(.opening) .door-front { transition: none; }
+.state-opened:hover .door-inner { border-color: var(--club); }
+.opening .door-inner::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.55) 50%, transparent 70%);
+  background-size: 250% 100%;
+  animation: sweep 0.8s ease-out forwards;
+}
+
+.shake { animation: shake 0.4s; }
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 var(--or-glow); }
+  70% { box-shadow: 0 0 0 14px rgba(232, 196, 106, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(232, 196, 106, 0); }
+}
+@keyframes sweep { from { background-position: 120% 0; } to { background-position: -40% 0; } }
+@keyframes shake {
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .door-front { transition: none; }
+  .state-today .door-front, .shake, .opening .door-inner::after { animation: none; }
+}
+
+/* ---- Fenêtre de contenu ---- */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+}
+.modal-backdrop[hidden] { display: none; }
+.modal {
+  position: relative;
+  width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
+  background: var(--charbon);
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--club);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+  animation: pop 0.25s ease-out;
+}
+@keyframes pop { from { transform: scale(0.94); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .modal { animation: none; } }
+
+.modal-close {
+  position: absolute; top: 12px; right: 12px;
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1px solid var(--border); background: transparent; color: var(--text); cursor: pointer;
+}
+.modal-close:hover { border-color: var(--blue); }
+.modal-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; padding-right: 30px; }
+.modal-crest { width: 56px; height: 56px; object-fit: contain; flex-shrink: 0; }
+.modal-kicker { margin: 0 0 4px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; }
+.modal-head h2 {
+  margin: 0;
+  font-family: "Insatiable Display Compressed", var(--font-display);
+  font-weight: 700; font-size: 2rem; line-height: 1; text-transform: uppercase;
+}
+.modal-content p { line-height: 1.5; margin: 0 0 12px; font-size: 0.92rem; }
+.modal-content .meta { color: var(--text-dim); font-size: 0.8rem; }
+.modal-content .fine { color: var(--text-dim); font-size: 0.7rem; margin-top: 14px; }
+.modal-foot { display: flex; justify-content: flex-end; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+.btn-wide { width: 100%; padding: 13px; font-size: 0.95rem; margin-bottom: 10px; }
+
+/* Quiz */
+.quiz-question { font-weight: 700; font-size: 1.05rem !important; }
+.quiz-opts { display: grid; gap: 8px; margin-bottom: 12px; }
+.quiz-opt {
+  text-align: left; padding: 12px 14px; font-size: 0.9rem; font-weight: 700;
+  background: var(--charbon-light); color: var(--text);
+  border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer;
+}
+.quiz-opt:hover:not(:disabled) { border-color: var(--blue); }
+.quiz-opt:disabled { cursor: default; opacity: 0.6; }
+.quiz-opt.correct { opacity: 1; border-color: #2ecc71; background: rgba(46, 204, 113, 0.15); }
+.quiz-opt.wrong { opacity: 1; border-color: var(--pink); background: rgba(255, 127, 222, 0.12); }
+.quiz-feedback.ok strong, .quiz-feedback.ok { color: #fff; }
+
+/* Code promo */
+.promo-partner { font-family: var(--font-mono); font-size: 0.75rem !important; text-transform: uppercase; color: var(--text-dim); }
+.promo-code {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 10px 10px 16px; margin-bottom: 10px;
+  border: 2px dashed var(--border); border-radius: var(--radius-sm);
+}
+.promo-code code { flex: 1; font-family: var(--font-mono); font-weight: 700; font-size: 1.25rem; letter-spacing: 1.5px; }
+
+/* Exclusif */
+.video-placeholder {
+  position: relative; width: 100%; aspect-ratio: 16 / 9; margin-bottom: 12px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer;
+  background: radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--club) 70%, transparent), var(--charbon-light));
+  display: flex; align-items: center; justify-content: center; color: #fff;
+}
+.video-placeholder .play {
+  width: 60px; height: 60px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--blue); font-size: 1.3rem;
+}
+.video-placeholder:hover .play { filter: brightness(1.15); }
+.video-placeholder .duration { position: absolute; bottom: 8px; right: 10px; font-family: var(--font-mono); font-size: 0.72rem; }
+.wallpaper-preview { display: flex; justify-content: center; margin-bottom: 12px; }
+.wallpaper-preview canvas { width: 150px; height: auto; border-radius: 12px; border: 1px solid var(--border); }
+
+/* ---- Toast ---- */
+.toast {
+  position: fixed; left: 50%; bottom: 84px; z-index: 60;
+  transform: translate(-50%, 20px); opacity: 0;
+  background: var(--blue); color: #fff; font-weight: 700; font-size: 0.85rem;
+  padding: 10px 16px; border-radius: 999px; max-width: calc(100% - 32px); text-align: center;
+  transition: transform 0.25s, opacity 0.25s; pointer-events: none;
+}
+.toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+/* ---- Barre de démo ---- */
+.demo-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+  display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 16px;
+  background: rgba(38, 38, 38, 0.95); border-top: 1px solid var(--border);
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-dim);
+}
+.demo-bar .btn { padding: 7px 12px; font-size: 0.72rem; }
+
+@media (max-width: 600px) {
+  .advent-stats { width: 100%; justify-content: space-between; }
+  .advent-hero { padding: 28px 12px 22px; }
+  .cd-block { min-width: 50px; }
+  .door-title { display: none; }
+  .door-big .door-title { display: -webkit-box; }
+  .door:not(.door-big) .door-month { display: none; }
+  .door-tag { font-size: 0.55rem; padding: 2px 6px; }
+  .door-crest { width: 55%; max-height: 55%; }
+}
